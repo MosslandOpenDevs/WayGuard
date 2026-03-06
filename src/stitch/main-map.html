@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2764e7",
+              "secondary": "#10B981",
+              "warning": "#F59E0B",
+              "danger": "#EF4444",
+              "background-light": "#f6f6f8",
+              "background-dark": "#111621",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative mx-auto max-w-[430px] h-screen bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl">
+<!-- Header Section -->
+<header class="pt-12 pb-4 px-4 bg-white dark:bg-slate-900 z-20 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-3xl font-bold">shield_with_heart</span>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">안전 지킴이</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700">
+<span class="material-symbols-outlined text-slate-500">person</span>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400">search</span>
+</div>
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-400" placeholder="동네를 검색하세요" type="text"/>
+</div>
+</header>
+<!-- Filter Bar (Scrollable) -->
+<div class="px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 overflow-x-auto hide-scrollbar z-20">
+<div class="flex gap-2 whitespace-nowrap">
+<button class="px-4 py-1.5 rounded-full bg-primary text-white text-sm font-medium">전체</button>
+<button class="px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm font-medium border border-slate-200 dark:border-slate-700">CCTV</button>
+<button class="px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm font-medium border border-slate-200 dark:border-slate-700">가로등</button>
+<button class="px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm font-medium border border-slate-200 dark:border-slate-700">비상벨</button>
+<button class="px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm font-medium border border-slate-200 dark:border-slate-700">지킴이집</button>
+<button class="px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm font-medium border border-slate-200 dark:border-slate-700">스쿨존</button>
+</div>
+</div>
+<!-- Map Area -->
+<div class="relative flex-1 bg-slate-200 overflow-hidden">
+<!-- Simulated Map Background -->
+<div class="absolute inset-0 bg-[url('https://placeholder.pics/svg/800x1200')] bg-cover bg-center" data-alt="Map of Yeoksam-dong Seoul with city blocks" data-location="Seoul, Korea" style="">
+<!-- Map Overlays: Markers & Areas -->
+<div class="absolute inset-0 bg-yellow-400/10 mix-blend-multiply"></div> <!-- School Zone Highlight -->
+<!-- CCTV Markers -->
+<div class="absolute top-1/4 left-1/3 flex flex-col items-center">
+<div class="bg-primary text-white p-1.5 rounded-full shadow-lg border-2 border-white">
+<span class="material-symbols-outlined text-base">videocam</span>
+</div>
+</div>
+<div class="absolute top-2/3 left-1/4 flex flex-col items-center">
+<div class="bg-primary text-white p-1.5 rounded-full shadow-lg border-2 border-white">
+<span class="material-symbols-outlined text-base">videocam</span>
+</div>
+</div>
+<!-- Safety House Markers -->
+<div class="absolute top-1/2 right-1/4 flex flex-col items-center">
+<div class="bg-secondary text-white p-1.5 rounded-full shadow-lg border-2 border-white">
+<span class="material-symbols-outlined text-base">home_pin</span>
+</div>
+</div>
+<!-- Emergency Bell Markers -->
+<div class="absolute bottom-1/3 right-1/3 flex flex-col items-center">
+<div class="bg-danger text-white p-1.5 rounded-full shadow-lg border-2 border-white">
+<span class="material-symbols-outlined text-base">notifications_active</span>
+</div>
+</div>
+<!-- Danger Zone Marker -->
+<div class="absolute top-1/3 right-1/2 flex flex-col items-center">
+<div class="bg-warning text-white p-1.5 rounded-full shadow-lg border-2 border-white animate-pulse">
+<span class="material-symbols-outlined text-base">warning</span>
+</div>
+</div>
+</div>
+<!-- Map Controls -->
+<div class="absolute right-4 top-4 flex flex-col gap-2">
+<button class="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg shadow-md flex items-center justify-center text-slate-700 dark:text-slate-200">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg shadow-md flex items-center justify-center text-slate-700 dark:text-slate-200">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg shadow-md flex items-center justify-center text-primary mt-2">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+<!-- Floating Safety Score Card -->
+<div class="absolute bottom-6 left-4 right-4 bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-xl border border-slate-100 dark:border-slate-700">
+<div class="flex items-start justify-between">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">역삼동 안전 지수</h3>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded">A등급</span>
+</div>
+<div class="flex items-center gap-1 mb-3">
+<span class="material-symbols-outlined text-warning text-lg fill-current">star</span>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">4.0</span>
+<span class="text-xs text-slate-400 ml-1">우수 지역</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl text-center">
+<p class="text-[10px] text-slate-400 uppercase font-medium">CCTV</p>
+<p class="text-sm font-bold text-slate-800 dark:text-slate-200">32</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl text-center">
+<p class="text-[10px] text-slate-400 uppercase font-medium">비상벨</p>
+<p class="text-sm font-bold text-slate-800 dark:text-slate-200">8</p>
+</div>
+<div class="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl text-center">
+<p class="text-[10px] text-slate-400 uppercase font-medium">지킴이집</p>
+<p class="text-sm font-bold text-slate-800 dark:text-slate-200">5</p>
+</div>
+</div>
+</div>
+<div class="ml-4 flex flex-col items-center justify-center gap-2">
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-slate-100 dark:text-slate-700" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary rounded-full" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213" stroke-dashoffset="40" stroke-width="6"></circle>
+</svg>
+<span class="absolute text-xl font-bold text-primary">85%</span>
+</div>
+<button class="text-xs font-semibold text-primary flex items-center">
+                            상세보기 <span class="material-symbols-outlined text-xs">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 pb-8 pt-2 px-4 flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl fill-current">map</span>
+<span class="text-[10px] font-bold">지도</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+<span class="text-[10px] font-medium">알림</span>
+</a>
+<div class="relative -top-6">
+<button class="w-14 h-14 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-white dark:border-slate-900">
+<span class="material-symbols-outlined text-3xl">emergency</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">group</span>
+<span class="text-[10px] font-medium">커뮤니티</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-medium">마이</span>
+</a>
+</nav>
+<!-- SOS Trigger Handle -->
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+</div>
+</body></html>

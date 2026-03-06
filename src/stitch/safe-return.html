@@ -1,0 +1,182 @@
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "Noto Sans KR", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>안전 지킴이 - 안심 귀가</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-[430px] mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between px-4 py-4 sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md z-10">
+<button class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</button>
+<h1 class="text-lg font-bold">안심 귀가</h1>
+<button class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+</button>
+</header>
+<main class="flex-1 overflow-y-auto pb-24">
+<!-- Hero Status Area -->
+<div class="flex flex-col items-center justify-center py-8 px-6 text-center">
+<div class="relative mb-6">
+<!-- Pulsing Background Effect simulated with opacity -->
+<div class="absolute inset-0 bg-primary/10 rounded-full scale-125 blur-xl"></div>
+<button class="relative flex h-48 w-48 flex-col items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/30 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-6xl mb-2" style="font-variation-settings: 'FILL' 1">shield_with_heart</span>
+<span class="text-xl font-bold tracking-tight">귀가 시작</span>
+</button>
+</div>
+<h2 class="text-2xl font-bold mb-2">안심 귀가 모드</h2>
+<p class="text-slate-500 dark:text-slate-400">버튼을 눌러 안전한 귀가를 시작하세요</p>
+</div>
+<!-- Destination Card -->
+<div class="px-4 mb-6">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm flex items-center gap-4">
+<div class="bg-primary/10 p-3 rounded-full text-primary">
+<span class="material-symbols-outlined">home</span>
+</div>
+<div class="flex-1">
+<p class="text-xs text-slate-400 mb-0.5">목적지</p>
+<p class="text-sm font-bold">우리 집 (서울 강남구 역삼동)</p>
+</div>
+<button class="text-primary text-sm font-medium hover:underline">변경</button>
+</div>
+</div>
+<!-- Emergency Contacts -->
+<div class="px-4 mb-6">
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="font-bold text-lg">비상 연락처</h3>
+<button class="text-slate-400 text-sm font-medium">편집</button>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+<!-- Contact Item -->
+<div class="flex flex-col items-center min-w-[70px]">
+<div class="size-14 rounded-full bg-slate-200 dark:bg-slate-700 mb-2 overflow-hidden border-2 border-primary/20">
+<img alt="" class="w-full h-full object-cover" data-alt="Portrait of a friendly middle aged woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk5mqgm6xniTIdD1Uzd88fhMPVMnZczYhaY9w4vb7dt847f_rE9voevllUiKOeQiXsXWLeUxxGUYTVMWai6x-wC9j8eD8J-RAN27XHHvMXhaC4PAyPkiX56GlcwA9bPP1rBMH91jDDhq_Bp7VcASptI1_-5slEZhn1sTj8AMkLbHqgy5wCCTDhYegLwaEHmH49rmNqZoi_OiR1dIV3_VbiMtnNv6PpGebB9TzOT7CtNU26BOX7QTbO74O3m3tsZOHn2PNiP9wQzXRC"/>
+</div>
+<span class="text-xs font-medium">엄마</span>
+</div>
+<!-- Contact Item -->
+<div class="flex flex-col items-center min-w-[70px]">
+<div class="size-14 rounded-full bg-slate-200 dark:bg-slate-700 mb-2 overflow-hidden border-2 border-transparent">
+<img alt="" class="w-full h-full object-cover" data-alt="Portrait of a young smiling woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6kk-g9rkrfr2dPYPEdHs1teM77KbbV2_rEkavaj3R0NKjde5nmkACSNb0pzV1XhMaESGqdhsMBNj3j-U_VX-gkXMIRipHgHRJHzXas2Bp_CS7TSXwJyswwdGTs2XDVGXSghl_god9PraNuEBa0RJ8erDW5SlLlKjknHcJwL8Vrbg7x4yzGVYVRg_6q5bsTsM4bRvC5BDk05W94bMRZbUI6FxdLf-2qMQ9PU9o0nW60AYWhcATAt2H6PZFLJynBBLv8aNDzs7awrN6"/>
+</div>
+<span class="text-xs font-medium">친구 민지</span>
+</div>
+<!-- Add Contact -->
+<button class="flex flex-col items-center min-w-[70px]">
+<div class="size-14 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center mb-2 text-slate-400">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="text-xs font-medium text-slate-400">지인 추가</span>
+</button>
+</div>
+</div>
+<!-- Quick Safety Features -->
+<div class="px-4 mb-8">
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-white dark:bg-slate-800 p-3 rounded-2xl flex flex-col items-center text-center gap-2 border border-slate-100 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-primary">share_location</span>
+<span class="text-[10px] leading-tight font-medium">실시간<br/>위치 공유</span>
+</div>
+<div class="bg-white dark:bg-slate-800 p-3 rounded-2xl flex flex-col items-center text-center gap-2 border border-slate-100 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-primary">notifications_active</span>
+<span class="text-[10px] leading-tight font-medium">미도착 시<br/>자동 알림</span>
+</div>
+<div class="bg-red-50 dark:bg-red-950/30 p-3 rounded-2xl flex flex-col items-center text-center gap-2 border border-red-100 dark:border-red-900/50 shadow-sm">
+<span class="material-symbols-outlined text-red-500">emergency</span>
+<span class="text-[10px] leading-tight font-bold text-red-600 dark:text-red-400">긴급 SOS<br/>버튼</span>
+</div>
+</div>
+</div>
+<!-- Recent History -->
+<div class="px-4">
+<h3 class="font-bold text-lg mb-3 px-1">최근 활동</h3>
+<div class="space-y-3">
+<div class="bg-white dark:bg-slate-800 p-4 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold">안전 도착</p>
+<p class="text-[11px] text-slate-400">2023.11.20 오후 10:30</p>
+</div>
+</div>
+<span class="text-xs font-medium text-slate-500">우리 집</span>
+</div>
+<div class="bg-white dark:bg-slate-800 p-4 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold">안전 도착</p>
+<p class="text-[11px] text-slate-400">2023.11.19 오후 09:15</p>
+</div>
+</div>
+<span class="text-xs font-medium text-slate-500">우리 집</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="absolute bottom-0 left-0 right-0 flex border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg px-4 pb-8 pt-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-medium">홈</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">map</span>
+<p class="text-[10px] font-medium">지도</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">shield_person</span>
+<p class="text-[10px] font-bold">안심귀가</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">group</span>
+<p class="text-[10px] font-medium">커뮤니티</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-medium">설정</p>
+</a>
+</nav>
+</div>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

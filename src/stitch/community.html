@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>우리 동네 안전 톡 - 안전 지킴이</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2764e7",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<div class="relative flex h-screen max-w-[480px] mx-auto flex-col bg-background-light dark:bg-background-dark overflow-hidden shadow-2xl">
+<header class="sticky top-0 z-10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between px-4 py-3">
+<div class="flex items-center gap-1 group cursor-pointer">
+<h2 class="text-lg font-bold tracking-tight">역삼동</h2>
+<span class="material-symbols-outlined text-slate-500">expand_more</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</div>
+<div class="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-1 rounded-full bg-primary text-white px-4 text-sm font-semibold">
+                    전체
+                </button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 text-sm font-medium">
+                    가로등고장
+                </button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 text-sm font-medium">
+                    도로파손
+                </button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 text-sm font-medium">
+                    위험요소
+                </button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-800">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm">안전지기_역삼</span>
+<span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Lv.3</span>
+</div>
+<span class="text-xs text-slate-500">10분 전</span>
+</div>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="space-y-2 mb-3">
+<h3 class="text-base font-bold leading-snug">역삼로 12길 가로등 3개 고장</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        어제 퇴근길에 보니 역삼로 12길 근처 가로등 3개가 한꺼번에 안 들어오네요. 밤에 너무 어두워서 위험해 보입니다.
+                    </p>
+<div class="flex flex-wrap gap-2 text-primary text-xs font-medium">
+<span>#가로등고장</span>
+<span>#야간위험</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>역삼로 12길</span>
+</div>
+</div>
+<div class="rounded-lg overflow-hidden mb-4 aspect-video bg-slate-100 dark:bg-slate-800">
+<img alt="Broken street lamp in a dark alley" class="w-full h-full object-cover" data-alt="Dark street with a broken street lamp" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDT23yUVpQbAYOCjr4OPeooIdEdgMWo7ujdS867uikisWTio0c4fKI-y0Msz6PYMetL7a7BShRChhHLfVUwa6ZTj6pWYqZ2MQ-7BSj6P_d2goUjZhXawSxn-K29CVeYVU_h_D04AROnKsN2UrZmf8bIJBlluXMKstVm_rO0hmmzsiCgPrYlgBbCMzFZB0mTqDYmQXMlL2f2Ac4Rmg6FX97FDBjDEP_kiUdS_OxNRYSKPy-G6utQuhsZ05FsiwrxZrzAB9dxZgsOS3aG"/>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-50 dark:border-slate-800">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary transition-colors">
+<span class="material-symbols-outlined text-sm fill">warning</span>
+<span class="text-xs font-bold">위험해요 23</span>
+</button>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+<span class="text-xs font-medium">5</span>
+</button>
+<button class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-sm">share</span>
+<span class="text-xs font-medium">공유</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-slate-400">person</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-sm">선릉보안관</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Lv.2</span>
+</div>
+<span class="text-xs text-slate-500">45분 전</span>
+</div>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="space-y-2 mb-3">
+<h3 class="text-base font-bold leading-snug">선릉역 2번 출구 비상벨 작동 불량</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        선릉역 2번 출구 앞 비상벨에 빨간 불이 계속 깜빡이고 눌러도 반응이 없는 것 같아요. 점검이 필요해 보입니다.
+                    </p>
+<div class="flex flex-wrap gap-2 text-primary text-xs font-medium">
+<span>#비상벨고장</span>
+<span>#선릉역</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>선릉역 2번 출구 앞</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-50 dark:border-slate-800">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary transition-colors">
+<span class="material-symbols-outlined text-sm fill">warning</span>
+<span class="text-xs font-bold">위험해요 45</span>
+</button>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+<span class="text-xs font-medium">12</span>
+</button>
+<button class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-sm">share</span>
+<span class="text-xs font-medium">공유</span>
+</button>
+</div>
+</div>
+</div>
+<div class="h-20"></div>
+</main>
+<button class="absolute bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<nav class="sticky bottom-0 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 py-2 flex items-center justify-between pb-8">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] font-medium">지도</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-[10px] font-medium">알림</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill">forum</span>
+<span class="text-[10px] font-bold">커뮤니티</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">마이</span>
+</a>
+</nav>
+</div>
+</body></html>

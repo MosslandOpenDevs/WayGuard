@@ -1,0 +1,197 @@
+/* 아이 안전 페이지 스타일 */
+
+.child-section {
+    margin-bottom: var(--space-lg);
+}
+
+/* 경로 체크 카드 */
+.route-check-card {
+    padding: var(--space-lg);
+}
+
+.route-check-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.route-check-header h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+}
+
+.route-inputs {
+    margin-bottom: var(--space-md);
+    position: relative;
+}
+
+.route-input-group {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.route-dot {
+    margin-top: 28px;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.route-dot.start {
+    color: var(--color-primary);
+}
+
+.route-dot.end {
+    color: var(--color-danger);
+}
+
+.route-input-wrapper {
+    flex: 1;
+}
+
+.route-input-wrapper label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.route-line {
+    position: absolute;
+    left: 5px;
+    top: 42px;
+    bottom: 42px;
+    width: 2px;
+    background: var(--color-border);
+}
+
+/* 안전 분석 결과 그리드 */
+.safety-result-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.safety-result-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-md) var(--space-sm);
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.safety-result-item.warning {
+    border-color: var(--color-warning);
+    background: var(--color-warning-bg);
+}
+
+.result-icon {
+    font-size: 24px;
+}
+
+.result-value {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+}
+
+/* 종합 판정 */
+.route-verdict {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+}
+
+.route-verdict.safe {
+    background: var(--color-safe-bg);
+    color: var(--color-safe);
+}
+
+.route-verdict.danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
+/* 시설 아이템 */
+.facility-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.facility-icon {
+    font-size: 24px;
+}
+
+.facility-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.facility-distance {
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+}
+
+/* 알림 설정 카드 */
+.alert-setting {
+    padding: var(--space-md);
+}
+
+.alert-setting-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+/* 토글 스위치 */
+.toggle {
+    width: 52px;
+    height: 28px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    background: var(--color-border);
+    transition: background var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.toggle.on {
+    background: var(--color-safe);
+}
+
+.toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    transition: transform var(--transition-fast);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle.on .toggle-knob {
+    transform: translateX(24px);
+}
+
+/* 보호자 정보 */
+.alert-guardian {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+}

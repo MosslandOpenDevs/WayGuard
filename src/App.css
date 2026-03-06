@@ -1,0 +1,29 @@
+/* App 전역 레이아웃 스타일 */
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    background: var(--color-bg);
+}
+
+.main-content {
+    flex: 1;
+    /* 헤더와 하단 네비게이션 공간 확보 */
+    padding-top: var(--header-height);
+    padding-bottom: var(--bottom-nav-height);
+}
+
+/* 데스크탑에서는 중앙 정렬 + 좌우 배경 */
+@media (min-width: 481px) {
+    body {
+        background: var(--color-border);
+    }
+
+    .app {
+        box-shadow: var(--shadow-lg);
+        min-height: 100vh;
+    }
+}

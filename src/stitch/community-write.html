@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2764e7",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark flex justify-center">
+<div class="w-full max-w-[430px] min-h-screen bg-white dark:bg-slate-900 shadow-xl flex flex-col relative">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 h-14 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100 cursor-pointer">arrow_back</span>
+<h1 class="text-slate-900 dark:text-slate-100 font-bold text-lg tracking-tight">위험 제보하기</h1>
+</div>
+<button class="text-primary font-bold text-base hover:opacity-80 transition-opacity">등록</button>
+</header>
+<main class="flex-1 overflow-y-auto pb-32">
+<!-- Category Chips Section -->
+<div class="py-4">
+<div class="flex gap-2 px-4 overflow-x-auto hide-scrollbar">
+<button class="shrink-0 px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold transition-colors">가로등고장</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-200 transition-colors">도로파손</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-200 transition-colors">CCTV사각지대</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-200 transition-colors">수상한상황</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-200 transition-colors">위험시설물</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-200 transition-colors">기타</button>
+</div>
+</div>
+<!-- Input Form Section -->
+<div class="px-4 space-y-4">
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">제목</label>
+<input class="w-full bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl py-4 px-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="무엇이 위험한가요?" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">내용</label>
+<textarea class="w-full bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl py-4 px-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 transition-all resize-none" placeholder="자세히 설명해주세요..." rows="6"></textarea>
+</div>
+<!-- Photo Attachment -->
+<div class="space-y-1.5">
+<label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">사진 첨부</label>
+<div class="flex gap-3">
+<button class="size-20 bg-slate-50 dark:bg-slate-800/50 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-primary/40 transition-colors group">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">photo_camera</span>
+<span class="text-[10px] font-bold text-slate-400 mt-1">0/5</span>
+</button>
+<div class="hidden">
+<!-- Placeholder for uploaded photos -->
+</div>
+</div>
+<p class="text-xs text-slate-400 mt-2 px-1">사진 추가 (최대 5장)</p>
+</div>
+<!-- Location Section -->
+<div class="space-y-1.5 pt-2">
+<label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">위치 정보</label>
+<div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">location_on</span>
+<span class="text-slate-900 dark:text-slate-100 font-medium text-sm">서울 강남구 역삼동</span>
+</div>
+<button class="text-xs font-bold text-slate-500 bg-white dark:bg-slate-700 px-3 py-1.5 rounded-lg shadow-sm border border-slate-100 dark:border-slate-600">위치 변경</button>
+</div>
+<div class="w-full h-32 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700 relative">
+<img class="w-full h-full object-cover opacity-80" data-alt="Map view of Gangnam-gu area in Seoul" data-location="Seoul" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhbvLhyeHSX5PAic2LkR5xLRZpVSBP3cl8Vs7X93aYHXomO1eLNqp90EryXdCgb28AA0F0eCBiRQnveMYTihdph-VA3WBfy1FyXFd1d3DBcuwBVJW18JB3Vgqter-t4XFiNBvQ_f2qAdGTRDrdGT_1YBgowMZ0DYGkUDopZ2L8UKkKX7MmvQhefkie3beecbnXBcueY6TRV7l4wY1wupxO_x993i_ESSZZbOwyKxXATHk6TfKIClfBqNRHtkFG6N_1kAyJA_tpbkhz"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="size-8 bg-primary/20 rounded-full flex items-center justify-center border border-primary animate-pulse">
+<div class="size-2.5 bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Anonymous Toggle -->
+<div class="flex items-center justify-between py-4 px-1">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-slate-100 font-bold">익명 게시</span>
+<span class="text-xs text-slate-400">작성자 정보를 공개하지 않습니다.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</main>
+<!-- Bottom Action Button -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-100 dark:border-slate-800">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                등록하기
+            </button>
+<div class="h-4"></div> <!-- Home indicator space -->
+</div>
+</div>
+</body></html>

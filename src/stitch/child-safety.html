@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "secondary": "#10b981",
+                        "background-light": "#fdfdfb",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled { font-variation-settings: 'FILL' 1; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="max-w-[430px] mx-auto min-h-screen flex flex-col shadow-2xl bg-background-light dark:bg-background-dark relative overflow-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between px-6 pt-6 pb-2 sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md z-50">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-300">arrow_back_ios_new</span>
+</button>
+<h1 class="text-xl font-bold tracking-tight">아이 안전</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 relative">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-300">notifications</span>
+<span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+</header>
+<main class="flex-1 px-6 pb-32 overflow-y-auto space-y-6 pt-4">
+<!-- Route Safety Check Card -->
+<section class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">route</span>
+<h2 class="text-lg font-bold">경로 안전 확인</h2>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 bg-background-light dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-slate-400 text-sm">radio_button_checked</span>
+<div class="flex-1">
+<p class="text-xs text-slate-400 font-medium">출발지</p>
+<p class="text-sm font-semibold">행복 어린이집</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-background-light dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-primary text-sm">location_on</span>
+<div class="flex-1">
+<p class="text-xs text-slate-400 font-medium">도착지</p>
+<p class="text-sm font-semibold">우리집</p>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-lg font-bold transition-colors mt-2">
+                        안전 경로 확인하기
+                    </button>
+</div>
+</section>
+<!-- Route Analysis Result -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold">분석 결과</h3>
+<span class="px-3 py-1 bg-secondary/10 text-secondary text-xs font-bold rounded-full border border-secondary/20">상대적 안전</span>
+</div>
+<div class="relative w-full h-48 rounded-xl overflow-hidden bg-slate-200" data-location="Seoul" style="">
+<img alt="Neighborhood map with safety markers" class="w-full h-full object-cover" data-alt="Local map showing child safety markers and route" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC76OG48VH7ziVgMoTehr4KDBA8vuCP4kXL9Ce587WdoF-AlPMp6m2-ZrdCGLmfQ3HtzVBLlxn1jNQY8wvaxZ0RTk1ji5IPNa_AQaDyLrHuztniWV2Xo7MWp762gRbgkd4jIWtGjwW90J5YUP2iaLTM9M5M8SXX6CVw4rX2vea8TMNaDxGOH0Vtl2nYiKHvAPxrpJh0fkNlkzu9O-3VYa8L1FmMgRZyQzF4ddUFeBzRZCvPHAGrK2cx0CLUDidoFIoQCJbHrKILZCWJ"/>
+<!-- Map Markers Overlay -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+<span class="material-symbols-outlined text-primary filled scale-150">location_on</span>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-2">
+<div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg text-center border border-blue-100 dark:border-blue-800">
+<p class="text-[10px] text-blue-600 dark:text-blue-400 font-bold mb-1">CCTV</p>
+<p class="text-lg font-bold text-blue-800 dark:text-blue-200">12</p>
+</div>
+<div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg text-center border border-green-100 dark:border-green-800">
+<p class="text-[10px] text-green-600 dark:text-green-400 font-bold mb-1">안전주택</p>
+<p class="text-lg font-bold text-green-800 dark:text-green-200">3</p>
+</div>
+<div class="bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg text-center border border-orange-100 dark:border-orange-800">
+<p class="text-[10px] text-orange-600 dark:text-orange-400 font-bold mb-1">비상벨</p>
+<p class="text-lg font-bold text-orange-800 dark:text-orange-200">2</p>
+</div>
+<div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg text-center border border-red-100 dark:border-red-800">
+<p class="text-[10px] text-red-600 dark:text-red-400 font-bold mb-1">주의구역</p>
+<p class="text-lg font-bold text-red-800 dark:text-red-200">1</p>
+</div>
+</div>
+</section>
+<!-- Nearby Facilities -->
+<section class="space-y-3">
+<h3 class="text-lg font-bold">주변 안전 시설</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">shield</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold">방범 안전지킴이집</h4>
+<p class="text-xs text-slate-500">서울 강남구 역삼로 123</p>
+</div>
+<p class="text-sm font-bold text-primary">150m</p>
+</div>
+<div class="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-600">local_police</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold">역삼 지구대</h4>
+<p class="text-xs text-slate-500">서울 강남구 테헤란로 45</p>
+</div>
+<p class="text-sm font-bold text-primary">420m</p>
+</div>
+</div>
+</section>
+<!-- Alert Settings -->
+<section class="bg-slate-900 dark:bg-primary p-5 rounded-2xl text-white shadow-xl mb-8">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-yellow-400 filled">warning</span>
+<h3 class="font-bold">실시간 위험 알림</h3>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<p class="text-sm text-slate-300 dark:text-slate-100 leading-relaxed">
+                    아이가 주의 구역에 진입할 경우 보호자(<span class="font-bold text-white underline">엄마</span>)에게 즉시 푸시 알림을 전송합니다.
+                </p>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] border-t border-slate-100 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-lg px-6 pb-8 pt-4 flex justify-between items-center z-50">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] font-bold">지도</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined filled">child_care</span>
+<span class="text-[10px] font-bold">아이 안전</span>
+</a>
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center -mt-12 shadow-lg border-4 border-background-light dark:border-background-dark">
+<span class="material-symbols-outlined text-white">emergency</span>
+</div>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-[10px] font-bold">안전 리포트</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">설정</span>
+</a>
+</nav>
+</div>
+</body></html>
