@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../utils/supabaseClient'
+import { compressImage } from '../utils/imageUtils'
 
-// 신고 카테고리 정의 — Stitch 디자인의 아이콘과 레이블 매핑
+// 신고 카테고리 정의
 const CATEGORIES = [
     { id: 'light', icon: 'lightbulb', label: '가로등 고장' },
     { id: 'cctv', icon: 'videocam_off', label: 'CCTV 사각지대' },
@@ -9,10 +12,134 @@ const CATEGORIES = [
     { id: 'other', icon: 'more_horiz', label: '기타 위험' },
 ]
 
-// 위험 신고 페이지 — Stitch 디자인 기반
 function Report() {
     const [selectedCategory, setSelectedCategory] = useState('light')
     const [description, setDescription] = useState('')
+    const [location, setLocation] = useState({ lat: 37.5006, lng: 127.0364 }) // 기본 역삼동
+    const [locationName, setLocationName] = useState('현재 위치를 찾는 중...')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [photoFile, setPhotoFile] = useState(null)
+    const [photoPreview, setPhotoPreview] = useState(null)
+    const navigate = useNavigate()
+    const fileInputRef = useRef(null)
+
+    useEffect(() => {
+        // 컴포넌트 마운트 시 위치 정보 가져오기
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLocation({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    })
+                    setLocationName('현재 내 위치')
+                },
+                () => {
+                    setLocationName('기본 위치 (위치 권한 없음)')
+                }
+            )
+        } else {
+            setLocationName('기본 위치 (GPS 미지원)')
+        }
+    }, [])
+
+    const handleSubmit = async () => {
+        if (!description.trim()) {
+            alert('상세 설명을 입력해주세요.');
+            return;
+        }
+
+        setIsSubmitting(true)
+
+        // 현재 사용자 가져오기
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (!session) {
+            alert('로그인이 필요합니다.')
+            navigate('/login')
+            setIsSubmitting(false)
+            return
+        }
+
+        let imageUrl = null;
+
+        // 사진이 첨부되었으면 먼저 압축 및 업로드
+        if (photoFile) {
+            try {
+                // 1. 이미지 압축 (최대 800px, 70% 퀄리티)
+                const compressedBlob = await compressImage(photoFile, 800, 800, 0.7);
+                const fileName = `${session.user.id}/${Date.now()}.jpg`;
+
+                // 2. Supabase Storage에 업로드
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('reports') // 버킷 이름 (직접 생성 필요)
+                    .upload(fileName, compressedBlob, {
+                        contentType: 'image/jpeg'
+                    });
+
+                if (uploadError) {
+                    console.error('Storage upload error:', uploadError);
+                    alert(`사진 업로드 실패 (Storage 버킷 'reports'를 생성하고 Public 권한을 열어주세요)\n에러: ${uploadError.message}`);
+                    setIsSubmitting(false);
+                    return;
+                }
+
+                // 3. 업로드된 사진의 Public URL 가져오기
+                const { data: { publicUrl } } = supabase.storage
+                    .from('reports')
+                    .getPublicUrl(fileName);
+
+                imageUrl = publicUrl;
+            } catch (imgError) {
+                console.error('Image compression error:', imgError);
+                alert('사진 압축 중 오류가 발생했습니다.');
+                setIsSubmitting(false);
+                return;
+            }
+        }
+
+        // Supabase DB에 인서트
+        const { error } = await supabase
+            .from('reports')
+            .insert([
+                {
+                    user_id: session.user.id,
+                    category: selectedCategory,
+                    description: description,
+                    latitude: location.lat,
+                    longitude: location.lng,
+                    image_url: imageUrl
+                }
+            ])
+
+        setIsSubmitting(false)
+
+        if (error) {
+            console.error('Error inserting report:', error)
+            alert(`신고 접수 중 오류가 발생했습니다.\n${error.message}`)
+        } else {
+            alert('신고가 안전하게 접수되었습니다! 주변 이웃들과 관련 기관에 전달됩니다.')
+            navigate('/')
+        }
+    }
+
+    const handlePhotoUpload = (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            setPhotoFile(file);
+            setPhotoPreview(URL.createObjectURL(file));
+        }
+    }
+
+    const handleRemovePhoto = () => {
+        setPhotoFile(null);
+        setPhotoPreview(null);
+    }
+
+    const handleChangeLocation = () => {
+        alert('지도에서 새 위치 지정하기 (기능 준비 중입니다.)\n현재 위치를 계속 사용합니다.');
+    }
 
     return (
         <div className="flex-1 overflow-y-auto pb-32 px-4">
@@ -51,30 +178,49 @@ function Report() {
 
             {/* 사진 첨부 */}
             <section className="mt-8">
-                <h2 className="text-slate-900 dark:text-slate-100 text-base font-bold mb-4">사진 첨부</h2>
-                <div className="flex gap-4 overflow-x-auto">
-                    {/* 업로드 버튼 */}
-                    <div className="flex flex-col shrink-0 items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 cursor-pointer">
-                        <span className="material-symbols-outlined text-slate-400">photo_camera</span>
-                        <span className="text-[10px] text-slate-400 mt-1 font-medium">1/5</span>
-                    </div>
-                    {/* 샘플 썸네일 */}
-                    <div className="relative shrink-0 w-24 h-24 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800">
-                        <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-slate-500 text-2xl">image</span>
-                        </div>
-                        <button className="absolute top-1 right-1 size-5 bg-black/50 rounded-full flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white text-[14px]">close</span>
-                        </button>
-                    </div>
+                <div className="flex justify-between items-end mb-4">
+                    <h2 className="text-slate-900 dark:text-slate-100 text-base font-bold">사진 첨부</h2>
+                    <span className="text-[10px] text-red-500 font-bold bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">※ 개인정보 주의</span>
                 </div>
+                <div className="flex gap-4 overflow-x-auto hide-scrollbar">
+                    {/* 업로드 버튼 */}
+                    <div
+                        onClick={() => fileInputRef.current.click()}
+                        className="flex flex-col shrink-0 items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-slate-400">photo_camera</span>
+                        <span className="text-[10px] text-slate-400 mt-1 font-medium">{photoFile ? '1' : '0'}/1</span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handlePhotoUpload}
+                        />
+                    </div>
+                    {/* 첨부된 사진 썸네일 */}
+                    {photoPreview && (
+                        <div className="relative shrink-0 w-24 h-24 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800 animate-slide-up">
+                            <img src={photoPreview} alt="Attached Preview" className="w-full h-full object-cover" />
+                            <button
+                                onClick={handleRemovePhoto}
+                                className="absolute top-1 right-1 size-5 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+                            >
+                                <span className="material-symbols-outlined text-white text-[14px]">close</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-3 leading-relaxed">
+                    타인의 얼굴이나 차량 번호판 등 <span className="font-bold text-red-500">개인정보가 포함된 사진은 사전 경고 없이 무통보 삭제</span>될 수 있으며, 법적 책임은 등록자 본인에게 있습니다.
+                </p>
             </section>
 
             {/* 발생 위치 */}
             <section className="mt-8">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-slate-900 dark:text-slate-100 text-base font-bold">발생 위치</h2>
-                    <button className="text-primary text-xs font-bold flex items-center gap-1">
+                    <button onClick={handleChangeLocation} className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
                         위치 수정 <span className="material-symbols-outlined text-sm">chevron_right</span>
                     </button>
                 </div>
@@ -82,17 +228,8 @@ function Report() {
                     <div className="p-4 flex items-center gap-4">
                         <span className="material-symbols-outlined text-primary">location_on</span>
                         <div className="flex-1">
-                            <p className="text-slate-900 dark:text-slate-100 text-sm font-bold">서울 강남구 역삼동 123-4</p>
-                            <p className="text-slate-500 text-xs mt-0.5">현재 위치를 기준으로 설정되었습니다.</p>
-                        </div>
-                    </div>
-                    {/* 미니 지도 영역 */}
-                    <div className="h-32 w-full bg-slate-200 dark:bg-slate-800 relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-emerald-100"></div>
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="size-8 bg-primary/20 rounded-full flex items-center justify-center">
-                                <div className="size-3 bg-primary rounded-full ring-2 ring-white"></div>
-                            </div>
+                            <p className="text-slate-900 dark:text-slate-100 text-sm font-bold">{locationName}</p>
+                            <p className="text-slate-500 text-[10px] uppercase font-mono mt-0.5">{location.lat.toFixed(4)}, {location.lng.toFixed(4)}</p>
                         </div>
                     </div>
                 </div>
@@ -103,7 +240,7 @@ function Report() {
                 <h2 className="text-slate-900 dark:text-slate-100 text-base font-bold mb-4">상세 설명</h2>
                 <div className="relative">
                     <textarea
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-primary focus:border-primary"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-primary focus:border-primary outline-none transition-shadow"
                         placeholder="상황을 설명해주세요 (예: 가로등이 깜빡여서 어둡습니다)"
                         rows="4"
                         value={description}
@@ -124,8 +261,12 @@ function Report() {
 
             {/* 제출 버튼 */}
             <div className="mt-8">
-                <button className="w-full py-4 bg-primary text-white text-base font-bold rounded-xl shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
-                    신고하기
+                <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className={`w-full py-4 text-white text-base font-bold rounded-xl shadow-lg transition-all ${isSubmitting ? 'bg-primary/70 cursor-not-allowed' : 'bg-primary shadow-primary/20 active:scale-[0.98]'}`}
+                >
+                    {isSubmitting ? '접수 중...' : '신고하기'}
                 </button>
             </div>
         </div>
