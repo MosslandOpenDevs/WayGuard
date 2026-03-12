@@ -1,9 +1,9 @@
-﻿/* 
- * ?덉쟾 吏?댁씠 ??湲濡쒕쾶 ?ㅽ???(Tailwind CDN怨??④퍡 ?ъ슜)
- * Stitch ?붿옄?몄뿉???앹꽦??Tailwind ?대옒?ㅻ? 蹂댁셿?섎뒗 理쒖냼?쒖쓽 ?ㅽ??쇰쭔 ?ы븿
+/*
+ * 안전 지킴이 글로벌 스타일
+ * Stitch에서 가져온 Tailwind 기반 UI를 보완하는 최소한의 공통 규칙만 유지합니다.
  */
 
-/* 湲곕낯 由ъ뀑 */
+/* 기본 리셋 */
 *,
 *::before,
 *::after {
@@ -18,7 +18,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ?ㅽ겕濡ㅻ컮 ?④린湲?(Stitch ?붿옄?몄뿉???ъ슜) */
+/* 스크롤바 숨기기 */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -37,7 +37,7 @@ body {
   scrollbar-width: none;
 }
 
-/* fadeIn ?좊땲硫붿씠??*/
+/* fadeIn 애니메이션 */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -50,16 +50,18 @@ body {
   }
 }
 
-/* 빨간색 경고등 깜빡임 애니메이션 */
+/* 긴급 경고용 애니메이션 */
 @keyframes pulse-red {
   0% {
     transform: scale(0.95);
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
   }
+
   70% {
     transform: scale(1);
     box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
   }
+
   100% {
     transform: scale(0.95);
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
