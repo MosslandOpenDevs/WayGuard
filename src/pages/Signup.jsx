@@ -72,7 +72,7 @@ function Signup() {
     }
 
     return (
-        <div className="flex flex-1 flex-col overflow-y-auto px-6 pb-20 pt-10">
+        <div className="flex h-full flex-col overflow-y-auto px-6 pb-10 pt-10">
             <div className="mb-8">
                 <Link to="/login" className="mb-6 inline-flex items-center text-slate-400 transition-colors hover:text-slate-600">
                     <span className="material-symbols-outlined mr-1">arrow_back</span>

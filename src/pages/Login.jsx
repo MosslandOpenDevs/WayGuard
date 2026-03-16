@@ -44,7 +44,7 @@ function Login() {
     }
 
     return (
-        <div className="mt-[-60px] flex flex-1 flex-col justify-center px-6 pb-20">
+        <div className="flex h-full flex-col justify-center overflow-y-auto px-6 py-10">
             <div className="mb-10 text-center">
                 <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <span className="material-symbols-outlined text-4xl">shield_person</span>

@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 
 function Header({ title, isHome, session }) {
     return (
-        <header className="z-20 bg-white px-4 pb-4 pt-4 shadow-sm dark:bg-slate-900">
+        <header className="z-20 shrink-0 bg-white px-4 pb-4 pt-4 shadow-sm dark:bg-slate-900">
             <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-primary">
                     <span className="material-symbols-outlined text-3xl font-bold">shield_with_heart</span>
@@ -14,7 +14,7 @@ function Header({ title, isHome, session }) {
                     </div>
                 ) : (
                     <NavLink to="/login" className="text-sm font-bold text-primary">
-                        로그인
+                        {'\uB85C\uADF8\uC778'}
                     </NavLink>
                 )}
             </div>
@@ -26,7 +26,7 @@ function Header({ title, isHome, session }) {
                     </div>
                     <input
                         className="w-full rounded-xl border-none bg-slate-100 py-3 pl-12 pr-4 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 dark:bg-slate-800"
-                        placeholder="동네를 검색해보세요"
+                        placeholder={'\uB3D9\uB124\uB97C \uAC80\uC0C9\uD574\uBCF4\uC138\uC694'}
                         type="text"
                     />
                 </div>

@@ -3,7 +3,7 @@ import { NAV_ITEMS } from '../../constants/app';
 
 function BottomNav() {
     return (
-        <nav className="relative bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 pb-6 pt-2 w-full flex items-center z-50">
+        <nav className="relative z-50 flex min-h-[88px] w-full shrink-0 items-center border-t border-slate-100 bg-white pb-6 pt-2 dark:border-slate-800 dark:bg-slate-900">
             <div className="w-1/5 flex justify-center">
                 <NavLink
                     to={NAV_ITEMS[0].path}

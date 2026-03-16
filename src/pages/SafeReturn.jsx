@@ -312,7 +312,7 @@ function SafeReturn() {
     }
 
     return (
-        <div className="flex-1 overflow-y-auto pb-24">
+        <div className="h-full overflow-y-auto pb-8">
             <div className="flex flex-col items-center justify-center overflow-hidden px-6 pb-8 pt-12 text-center">
                 <div className="relative mb-8 flex h-64 w-64 items-center justify-center">
                     {isActive && (

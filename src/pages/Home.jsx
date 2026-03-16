@@ -5,14 +5,33 @@ import CurrentLocationButton from '../components/map/CurrentLocationButton'
 import MapView from '../components/map/MapView'
 import SafetyMarkers from '../components/map/SafetyMarkers'
 import { fetchReportMarkers } from '../services/reports'
-import { generateMockSafetyData } from '../utils/mockData'
+import { generateMockSafetyData, MOCK_CATEGORIES } from '../utils/mockData'
 import { supabase } from '../utils/supabaseClient'
 
 const DEFAULT_CENTER = { lat: 37.5006, lng: 127.0364 }
-const FILTERS = ['전체', '주민 신고', 'CCTV', '비상벨', '안전지킴이집']
+
+const UI = {
+    all: '\uC804\uCCB4',
+    residentReports: '\uC8FC\uBBFC \uC2E0\uACE0',
+    community: '\uCEE4\uBBA4\uB2C8\uD2F0 \uC81C\uBCF4',
+    route: '\uC548\uC2EC \uACBD\uB85C',
+    hub: '\uC548\uC804 \uAC70\uC810',
+    gpsUnavailable: 'GPS\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.',
+    reportsLoadFailed: '\uC2E0\uACE0 \uB370\uC774\uD130\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.',
+    scoreTitle: '\uD604\uC7AC \uC704\uCE58 \uC548\uC2EC \uC9C0\uC218',
+    scoreBadge: '\uCC38\uACE0 \uC9C0\uD45C',
+    scoreBasis: '\uC8FC\uBBFC \uD65C\uB3D9 \uAE30\uBC18',
+    communityLabel: '\uCEE4\uBBA4\uB2C8\uD2F0',
+    routeLabel: '\uC548\uC2EC \uACBD\uB85C',
+    reportsLabel: '\uC8FC\uBBFC \uC2E0\uACE0',
+    detailsReady: '\uC0C1\uC138 \uC815\uBCF4\uB294 \uB2E4\uC74C Stitch \uC2DC\uC548 \uBC18\uC601 \uB2E8\uACC4\uC5D0\uC11C \uC5F0\uACB0\uD569\uB2C8\uB2E4.',
+    fallbackLocation: '\uD604\uC7AC \uC704\uCE58\uB97C \uAC00\uC838\uC624\uC9C0 \uBABB\uD574 \uAE30\uBCF8 \uC704\uCE58 \uAE30\uC900\uC73C\uB85C \uD45C\uC2DC \uC911\uC785\uB2C8\uB2E4.',
+}
+
+const FILTERS = [UI.all, UI.residentReports, UI.community, UI.route, UI.hub]
 
 function Home() {
-    const [activeFilter, setActiveFilter] = useState('전체')
+    const [activeFilter, setActiveFilter] = useState(UI.all)
     const [selectedMarkerId, setSelectedMarkerId] = useState(null)
     const [state, setState] = useState({
         center: DEFAULT_CENTER,
@@ -38,7 +57,7 @@ function Home() {
                         center,
                         isLoading: false,
                     }))
-                    setMockSafetyData(generateMockSafetyData(center, 20, 0.005))
+                    setMockSafetyData(generateMockSafetyData(center, 16, 0.005))
                 },
                 (error) => {
                     setState((prev) => ({
@@ -46,16 +65,16 @@ function Home() {
                         errMsg: error.message,
                         isLoading: false,
                     }))
-                    setMockSafetyData(generateMockSafetyData(DEFAULT_CENTER, 20, 0.005))
+                    setMockSafetyData(generateMockSafetyData(DEFAULT_CENTER, 16, 0.005))
                 },
             )
         } else {
             setState((prev) => ({
                 ...prev,
-                errMsg: 'GPS를 사용할 수 없습니다.',
+                errMsg: UI.gpsUnavailable,
                 isLoading: false,
             }))
-            setMockSafetyData(generateMockSafetyData(DEFAULT_CENTER, 20, 0.005))
+            setMockSafetyData(generateMockSafetyData(DEFAULT_CENTER, 16, 0.005))
         }
 
         fetchReports()
@@ -69,33 +88,33 @@ function Home() {
             console.error('Unexpected error in fetchReports:', error)
             showToast({
                 tone: 'error',
-                title: '신고 데이터를 불러오지 못했습니다.',
+                title: UI.reportsLoadFailed,
             })
         }
     }
 
     const handleLocationUpdate = (newCenter) => {
         setState((prev) => ({ ...prev, center: newCenter }))
-        setMockSafetyData(generateMockSafetyData(newCenter, 20, 0.005))
+        setMockSafetyData(generateMockSafetyData(newCenter, 16, 0.005))
     }
 
     const filteredData = useMemo(() => {
         const allData = [...realReports, ...mockSafetyData]
-        if (activeFilter === '전체') {
+        if (activeFilter === UI.all) {
             return allData
         }
         return allData.filter((item) => item.type === activeFilter)
     }, [activeFilter, mockSafetyData, realReports])
 
     const stats = useMemo(() => {
-        const cctv = mockSafetyData.filter((item) => item.type === 'CCTV').length
-        const bell = mockSafetyData.filter((item) => item.type === '비상벨').length
+        const community = mockSafetyData.filter((item) => item.type === MOCK_CATEGORIES.community).length
+        const routes = mockSafetyData.filter((item) => item.type === MOCK_CATEGORIES.route).length
         const reports = realReports.length
-        return { cctv, bell, reports }
+        return { community, routes, reports }
     }, [mockSafetyData, realReports])
 
     return (
-        <>
+        <div className="flex h-full min-h-0 flex-col overflow-hidden">
             <div className="relative z-10 overflow-x-auto border-b border-slate-100 bg-white px-4 py-3 hide-scrollbar dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex gap-2 whitespace-nowrap">
                     {FILTERS.map((filter) => (
@@ -111,7 +130,7 @@ function Home() {
                 </div>
             </div>
 
-            <div className="relative flex-1 overflow-hidden bg-slate-200" style={{ minHeight: '50vh' }}>
+            <div className="relative min-h-0 flex-1 overflow-hidden bg-slate-200">
                 <MapView center={state.center} level={state.level} onClick={() => setSelectedMarkerId(null)}>
                     <CustomOverlayMap position={state.center} zIndex={100}>
                         <div className="pointer-events-none flex size-8 items-center justify-center rounded-full bg-primary/20 animate-pulse">
@@ -156,32 +175,32 @@ function Home() {
 
                 <CurrentLocationButton onLocationUpdate={handleLocationUpdate} />
 
-                <div className="absolute bottom-6 left-4 right-4 z-10 rounded-xl border border-slate-100 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95">
+                <div className="absolute bottom-3 left-4 right-4 z-10 rounded-xl border border-slate-100 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/95">
                     <div className="flex items-center justify-between">
                         <div className="flex-1">
                             <div className="mb-2 flex items-center gap-2">
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">현재 위치 안전 지수</h3>
-                                <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">A등급</span>
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{UI.scoreTitle}</h3>
+                                <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{UI.scoreBadge}</span>
                             </div>
                             <div className="mb-4 flex items-center gap-1">
                                 <span className="material-symbols-outlined text-lg text-amber-500" style={{ fontVariationSettings: "'FILL' 1" }}>
                                     star
                                 </span>
                                 <span className="text-sm font-bold text-slate-700 dark:text-slate-300">4.2</span>
-                                <span className="ml-1 text-xs text-slate-500">안전 점수 기준</span>
+                                <span className="ml-1 text-xs text-slate-500">{UI.scoreBasis}</span>
                             </div>
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-2 text-center dark:border-slate-700 dark:bg-slate-900/50">
-                                    <p className="mb-1 text-[10px] font-medium text-slate-500">CCTV</p>
-                                    <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{stats.cctv}</p>
+                                    <p className="mb-1 text-[10px] font-medium text-slate-500">{UI.communityLabel}</p>
+                                    <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{stats.community}</p>
                                 </div>
                                 <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-2 text-center dark:border-slate-700 dark:bg-slate-900/50">
-                                    <p className="mb-1 text-[10px] font-medium text-slate-500">비상벨</p>
-                                    <p className="text-sm font-bold text-red-600 dark:text-red-400">{stats.bell}</p>
+                                    <p className="mb-1 text-[10px] font-medium text-slate-500">{UI.routeLabel}</p>
+                                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{stats.routes}</p>
                                 </div>
                                 <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-2 text-center dark:border-slate-700 dark:bg-slate-900/50">
-                                    <p className="mb-1 text-[10px] font-medium text-slate-500">주민 신고</p>
-                                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{stats.reports}</p>
+                                    <p className="mb-1 text-[10px] font-medium text-slate-500">{UI.reportsLabel}</p>
+                                    <p className="text-sm font-bold text-red-600 dark:text-red-400">{stats.reports}</p>
                                 </div>
                             </div>
                         </div>
@@ -196,21 +215,21 @@ function Home() {
                             </div>
                             <button
                                 type="button"
-                                onClick={() => showToast({ title: '안전 지수 상세 정보는 준비 중입니다.' })}
+                                onClick={() => showToast({ title: UI.detailsReady })}
                                 className="flex items-center px-2 py-1 text-[10px] font-semibold text-primary hover:bg-primary/5"
                             >
-                                상세보기 <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+                                {'\uC790\uC138\uD788 \uBCF4\uAE30'} <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                             </button>
                         </div>
                     </div>
                     {state.errMsg && (
                         <p className="mt-3 text-xs text-amber-600">
-                            현재 위치를 가져오지 못해 기본 위치 기준으로 표시 중입니다.
+                            {UI.fallbackLocation}
                         </p>
                     )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

@@ -23,7 +23,7 @@ function App() {
     const isHome = location.pathname === '/'
     const isCommunity = location.pathname === '/community'
     const isAuthPage = location.pathname === '/login' || location.pathname === '/signup'
-    const title = PAGE_TITLES[location.pathname] || '안전 지킴이'
+    const title = PAGE_TITLES[location.pathname] || '\uC548\uC804 \uC9C0\uD0B4\uC774'
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
@@ -43,26 +43,54 @@ function App() {
     if (loading) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-white text-primary dark:bg-slate-900">
-                로딩 중...
+                {'\uB85C\uB529 \uC911...'}
             </div>
         )
     }
 
     return (
         <ToastProvider>
-            <div className="relative mx-auto flex min-h-screen max-w-[430px] flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900">
+            <div className="relative mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900">
                 {!isCommunity && !isAuthPage && <Header title={title} isHome={isHome} session={session} />}
 
-                <main className="relative flex-1 overflow-y-auto">
+                <main className="relative min-h-0 flex-1 overflow-hidden">
                     <Routes>
                         <Route path="/login" element={<Login />} />
                         <Route path="/signup" element={<Signup />} />
                         <Route path="/" element={<Home />} />
                         <Route path="/child-safety" element={<ChildSafety />} />
-                        <Route path="/report" element={<ProtectedRoute session={session}><Report /></ProtectedRoute>} />
-                        <Route path="/safe-return" element={<ProtectedRoute session={session}><SafeReturn /></ProtectedRoute>} />
-                        <Route path="/community" element={<ProtectedRoute session={session}><Community /></ProtectedRoute>} />
-                        <Route path="/settings" element={<ProtectedRoute session={session}><Settings /></ProtectedRoute>} />
+                        <Route
+                            path="/report"
+                            element={
+                                <ProtectedRoute session={session}>
+                                    <Report />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/safe-return"
+                            element={
+                                <ProtectedRoute session={session}>
+                                    <SafeReturn />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/community"
+                            element={
+                                <ProtectedRoute session={session}>
+                                    <Community />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/settings"
+                            element={
+                                <ProtectedRoute session={session}>
+                                    <Settings />
+                                </ProtectedRoute>
+                            }
+                        />
                     </Routes>
                 </main>
 

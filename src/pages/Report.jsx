@@ -144,7 +144,7 @@ function Report() {
     }
 
     return (
-        <div className="flex-1 overflow-y-auto px-4 pb-32">
+        <div className="h-full overflow-y-auto px-4 pb-8 pt-6">
             <section className="mt-6">
                 <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-slate-100">신고 유형 선택</h2>
                 <div className="grid grid-cols-2 gap-4">

@@ -58,7 +58,7 @@ function Settings() {
     ]
 
     return (
-        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2">
+        <div className="h-full overflow-y-auto px-4 pb-8 pt-4">
             <section className="mb-6">
                 <div className="flex items-center gap-4 rounded-xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">

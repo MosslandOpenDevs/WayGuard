@@ -17,7 +17,7 @@ function ChildSafety() {
     }
 
     return (
-        <div className="flex-1 space-y-6 overflow-y-auto px-4 pb-32 pt-4">
+        <div className="h-full space-y-6 overflow-y-auto px-4 pb-8 pt-4">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 p-5 text-white shadow-lg">
                 <div className="relative z-10">
                     <h2 className="mb-1 text-xl font-bold">우리 아이 등하원</h2>

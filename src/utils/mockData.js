@@ -1,46 +1,65 @@
-/**
- * 중심 좌표 주변으로 임의의 안전 시설 데이터를 생성하는 함수
- * @param {object} center - 중심 좌표 { lat, lng }
- * @param {number} count - 생성할 각 카테고리별 마커 개수 
- * @param {number} radius - 생성 반경 (단위: 대략적인 도 단위 변위, 0.005 정도면 약 500m)
- */
-export const generateMockSafetyData = (center, count = 15, radius = 0.005) => {
+const CATEGORY_COMMUNITY = '\uCEE4\uBBA4\uB2C8\uD2F0 \uC81C\uBCF4'
+const CATEGORY_ROUTE = '\uC548\uC2EC \uACBD\uB85C'
+const CATEGORY_HUB = '\uC548\uC804 \uAC70\uC810'
+
+export const MOCK_CATEGORIES = {
+    community: CATEGORY_COMMUNITY,
+    route: CATEGORY_ROUTE,
+    hub: CATEGORY_HUB,
+}
+
+export const generateMockSafetyData = (center, count = 12, radius = 0.005) => {
     const categories = [
-        { type: 'CCTV', icon: 'videocam', color: '#10B981', bgColor: 'bg-emerald-500' },
-        { type: '가로등', icon: 'lightbulb', color: '#F59E0B', bgColor: 'bg-amber-500' },
-        { type: '비상벨', icon: 'notifications_active', color: '#EF4444', bgColor: 'bg-red-500' },
-        { type: '지킴이집', icon: 'home_health', color: '#2563EB', bgColor: 'bg-blue-600' }
-    ];
+        {
+            type: CATEGORY_COMMUNITY,
+            icon: 'forum',
+            color: '#10B981',
+            bgColor: 'bg-emerald-500',
+            info: '\uC774\uC6C3\uC774 \uB0A8\uAE34 \uC548\uC804 \uBA54\uBAA8\uAC00 \uBAA8\uC778 \uC9C0\uC810',
+            spawnCount: count,
+        },
+        {
+            type: CATEGORY_ROUTE,
+            icon: 'route',
+            color: '#2563EB',
+            bgColor: 'bg-blue-600',
+            info: '\uADC0\uAC00 \uB3D9\uC120\uC5D0\uC11C \uC790\uC8FC \uC120\uD0DD\uB418\uB294 \uC548\uC2EC \uC774\uB3D9 \uCD95',
+            spawnCount: Math.max(4, Math.floor(count * 0.75)),
+        },
+        {
+            type: CATEGORY_HUB,
+            icon: 'shield_person',
+            color: '#F59E0B',
+            bgColor: 'bg-amber-500',
+            info: '\uB3C4\uC6C0 \uC694\uCCAD \uC2DC \uBE60\uB974\uAC8C \uCC3E\uC744 \uC218 \uC788\uB294 \uB3D9\uB124 \uC548\uC2EC \uAC70\uC810',
+            spawnCount: Math.max(3, Math.floor(count * 0.5)),
+        },
+    ]
 
-    const mockData = [];
-    let idCounter = 1;
+    const mockData = []
+    let idCounter = 1
 
-    categories.forEach(category => {
-        // 지킴이집이나 비상벨은 상대적으로 스폰 개수를 적게 조절
-        const spawnCount = (category.type === '지킴이집' || category.type === '비상벨')
-            ? Math.floor(count / 2)
-            : count;
-
-        for (let i = 0; i < spawnCount; i++) {
-            // 중심 좌표 기준으로 랜덤하게 흩뿌리기
-            const latOffset = (Math.random() - 0.5) * 2 * radius;
-            const lngOffset = (Math.random() - 0.5) * 2 * radius;
+    categories.forEach((category) => {
+        for (let index = 0; index < category.spawnCount; index += 1) {
+            const latOffset = (Math.random() - 0.5) * 2 * radius
+            const lngOffset = (Math.random() - 0.5) * 2 * radius
 
             mockData.push({
-                id: idCounter++,
+                id: idCounter,
                 type: category.type,
                 icon: category.icon,
                 color: category.color,
                 bgColor: category.bgColor,
                 position: {
                     lat: center.lat + latOffset,
-                    lng: center.lng + lngOffset
+                    lng: center.lng + lngOffset,
                 },
-                // 임의의 정보 추가
-                info: `${category.type} #${idCounter}`
-            });
-        }
-    });
+                info: `${category.info} #${idCounter}`,
+            })
 
-    return mockData;
-};
+            idCounter += 1
+        }
+    })
+
+    return mockData
+}
