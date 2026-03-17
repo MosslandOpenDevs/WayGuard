@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { CustomOverlayMap } from 'react-kakao-maps-sdk'
+import BottomSheet from '../components/feedback/BottomSheet'
 import { useToast } from '../components/feedback/ToastProvider'
+import MapView from '../components/map/MapView'
 import { createReport, uploadReportImage } from '../services/reports'
 import { compressImage } from '../utils/imageUtils'
 import { supabase } from '../utils/supabaseClient'
+
+const DEFAULT_LOCATION = { lat: 37.5006, lng: 127.0364 }
 
 const CATEGORIES = [
     { id: 'light', icon: 'lightbulb', label: '가로등 고장' },
@@ -16,33 +21,50 @@ const CATEGORIES = [
 function Report() {
     const [selectedCategory, setSelectedCategory] = useState('light')
     const [description, setDescription] = useState('')
-    const [location, setLocation] = useState({ lat: 37.5006, lng: 127.0364 })
+    const [location, setLocation] = useState(DEFAULT_LOCATION)
     const [locationName, setLocationName] = useState('현재 위치를 찾는 중...')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [photoFile, setPhotoFile] = useState(null)
     const [photoPreview, setPhotoPreview] = useState(null)
+    const [isLocationSheetOpen, setIsLocationSheetOpen] = useState(false)
+    const [draftLocation, setDraftLocation] = useState(DEFAULT_LOCATION)
+    const [pickerCenter, setPickerCenter] = useState(DEFAULT_LOCATION)
     const navigate = useNavigate()
     const fileInputRef = useRef(null)
     const { showToast } = useToast()
 
-    useEffect(() => {
-        if (!navigator.geolocation) {
-            setLocationName('기본 위치 사용 중 (GPS 미지원)')
-            return
-        }
+    const getCurrentLocation = () =>
+        new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error('이 브라우저는 위치 기능을 지원하지 않습니다.'))
+                return
+            }
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setLocation({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                })
-                setLocationName('현재 내 위치')
-            },
-            () => {
-                setLocationName('기본 위치 사용 중 (위치 권한 없음)')
-            },
-        )
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    resolve({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    })
+                },
+                () => reject(new Error('위치 권한이 없어 기본 위치를 사용합니다.')),
+            )
+        })
+
+    useEffect(() => {
+        void (async () => {
+            try {
+                const nextLocation = await getCurrentLocation()
+                setLocation(nextLocation)
+                setDraftLocation(nextLocation)
+                setPickerCenter(nextLocation)
+                setLocationName('현재 위치')
+            } catch (error) {
+                setLocationName(error.message)
+                setDraftLocation(DEFAULT_LOCATION)
+                setPickerCenter(DEFAULT_LOCATION)
+            }
+        })()
     }, [])
 
     useEffect(() => {
@@ -64,7 +86,10 @@ function Report() {
 
         setIsSubmitting(true)
 
-        const { data: { session } } = await supabase.auth.getSession()
+        const {
+            data: { session },
+        } = await supabase.auth.getSession()
+
         if (!session) {
             showToast({
                 tone: 'error',
@@ -97,7 +122,7 @@ function Report() {
             await createReport(supabase, {
                 user_id: session.user.id,
                 category: selectedCategory,
-                description,
+                description: description.trim(),
                 latitude: location.lat,
                 longitude: location.lng,
                 image_url: imageUrl,
@@ -123,9 +148,7 @@ function Report() {
 
     const handlePhotoUpload = (event) => {
         const file = event.target.files?.[0]
-        if (!file) {
-            return
-        }
+        if (!file) return
 
         if (photoPreview) {
             URL.revokeObjectURL(photoPreview)
@@ -143,136 +166,221 @@ function Report() {
         setPhotoPreview(null)
     }
 
+    const handleMapSelect = (_map, mouseEvent) => {
+        const latLng = mouseEvent.latLng
+        const nextLocation = {
+            lat: latLng.getLat(),
+            lng: latLng.getLng(),
+        }
+        setDraftLocation(nextLocation)
+        setPickerCenter(nextLocation)
+    }
+
+    const handleOpenLocationSheet = () => {
+        setDraftLocation(location)
+        setPickerCenter(location)
+        setIsLocationSheetOpen(true)
+    }
+
+    const handleUseCurrentLocation = async () => {
+        try {
+            const nextLocation = await getCurrentLocation()
+            setDraftLocation(nextLocation)
+            setPickerCenter(nextLocation)
+            showToast({
+                tone: 'success',
+                title: '현재 위치로 다시 맞췄습니다.',
+            })
+        } catch (error) {
+            showToast({
+                tone: 'error',
+                title: error.message,
+            })
+        }
+    }
+
+    const applyDraftLocation = () => {
+        setLocation(draftLocation)
+        setLocationName('직접 지정한 위치')
+        setIsLocationSheetOpen(false)
+        showToast({
+            tone: 'success',
+            title: '신고 위치를 업데이트했습니다.',
+        })
+    }
+
     return (
-        <div className="h-full overflow-y-auto px-4 pb-8 pt-6">
-            <section className="mt-6">
-                <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-slate-100">신고 유형 선택</h2>
-                <div className="grid grid-cols-2 gap-4">
-                    {CATEGORIES.map((category) => (
-                        <button
-                            key={category.id}
-                            type="button"
-                            onClick={() => setSelectedCategory(category.id)}
-                            className={`relative flex flex-col gap-2 rounded-xl p-4 text-left transition-all ${selectedCategory === category.id ? 'border-2 border-primary bg-primary/5' : 'border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'}`}
-                        >
-                            <div className="flex items-start justify-between">
-                                <span
-                                    className={`material-symbols-outlined ${selectedCategory === category.id ? 'text-primary' : 'text-slate-500'}`}
-                                    style={selectedCategory === category.id ? { fontVariationSettings: "'FILL' 1" } : {}}
-                                >
-                                    {category.icon}
-                                </span>
-                                {selectedCategory === category.id && (
-                                    <span className="material-symbols-outlined text-sm text-primary">check_circle</span>
-                                )}
-                            </div>
-                            <p className={`text-sm ${selectedCategory === category.id ? 'font-bold text-primary' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
-                                {category.label}
-                            </p>
-                        </button>
-                    ))}
-                </div>
-            </section>
+        <>
+            <div className="h-full overflow-y-auto px-4 pb-8 pt-6">
+                <section className="mt-2 rounded-2xl bg-gradient-to-r from-primary to-blue-500 p-5 text-white shadow-lg">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">Resident Report</p>
+                    <h2 className="mt-2 text-xl font-bold">빠르게 신고하고 위치를 남겨 주세요</h2>
+                    <p className="mt-1 text-sm text-white/85">사진, 설명, 위치를 함께 남기면 지역 대응 흐름이 훨씬 빨라집니다.</p>
+                </section>
 
-            <section className="mt-8">
-                <div className="mb-4 flex items-end justify-between">
-                    <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">사진 첨부</h2>
-                    <span className="rounded bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-500 dark:bg-red-900/20">
-                        개인정보 주의
-                    </span>
-                </div>
-                <div className="hide-scrollbar flex gap-4 overflow-x-auto">
-                    <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-white transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
-                    >
-                        <span className="material-symbols-outlined text-slate-400">photo_camera</span>
-                        <span className="mt-1 text-[10px] font-medium text-slate-400">{photoFile ? '1' : '0'}/1</span>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handlePhotoUpload}
-                            className="hidden"
-                        />
-                    </button>
-
-                    {photoPreview && (
-                        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-200 animate-slide-up dark:border-slate-800 dark:bg-slate-800">
-                            <img src={photoPreview} alt="첨부 사진 미리보기" className="h-full w-full object-cover" />
+                <section className="mt-6">
+                    <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-slate-100">신고 유형 선택</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                        {CATEGORIES.map((category) => (
                             <button
+                                key={category.id}
                                 type="button"
-                                onClick={handleRemovePhoto}
-                                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 transition-colors hover:bg-black/70"
+                                onClick={() => setSelectedCategory(category.id)}
+                                className={`relative flex flex-col gap-2 rounded-2xl p-4 text-left transition-all ${
+                                    selectedCategory === category.id
+                                        ? 'border-2 border-primary bg-primary/5'
+                                        : 'border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
+                                }`}
                             >
-                                <span className="material-symbols-outlined text-[14px] text-white">close</span>
+                                <div className="flex items-start justify-between">
+                                    <span
+                                        className={`material-symbols-outlined ${selectedCategory === category.id ? 'text-primary' : 'text-slate-500'}`}
+                                        style={selectedCategory === category.id ? { fontVariationSettings: "'FILL' 1" } : {}}
+                                    >
+                                        {category.icon}
+                                    </span>
+                                    {selectedCategory === category.id ? (
+                                        <span className="material-symbols-outlined text-sm text-primary">check_circle</span>
+                                    ) : null}
+                                </div>
+                                <p className={`text-sm ${selectedCategory === category.id ? 'font-bold text-primary' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                                    {category.label}
+                                </p>
                             </button>
-                        </div>
-                    )}
-                </div>
-                <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
-                    타인의 얼굴이나 차량 번호판 등 <span className="font-bold text-red-500">개인정보가 포함된 사진은 사전 경고 없이 비공개 처리</span>될 수 있으며, 법적 책임은 등록한 본인에게 있습니다.
-                </p>
-            </section>
+                        ))}
+                    </div>
+                </section>
 
-            <section className="mt-8">
-                <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">발생 위치</h2>
-                    <button
-                        type="button"
-                        onClick={() => showToast({ title: '위치 변경 기능은 준비 중입니다.', description: '현재 위치를 계속 사용합니다.' })}
-                        className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                    >
-                        위치 수정 <span className="material-symbols-outlined text-sm">chevron_right</span>
-                    </button>
-                </div>
-                <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <div className="flex items-center gap-4 p-4">
-                        <span className="material-symbols-outlined text-primary">location_on</span>
-                        <div className="flex-1">
-                            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{locationName}</p>
-                            <p className="mt-0.5 font-mono text-[10px] uppercase text-slate-500">
-                                {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                            </p>
+                <section className="mt-8">
+                    <div className="mb-4 flex items-end justify-between">
+                        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">사진 첨부</h2>
+                        <span className="rounded bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-500 dark:bg-red-900/20">개인정보 주의</span>
+                    </div>
+                    <div className="hide-scrollbar flex gap-4 overflow-x-auto">
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-white transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
+                        >
+                            <span className="material-symbols-outlined text-slate-400">photo_camera</span>
+                            <span className="mt-1 text-[10px] font-medium text-slate-400">{photoFile ? '1' : '0'}/1</span>
+                            <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                        </button>
+
+                        {photoPreview ? (
+                            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-200 animate-slide-up dark:border-slate-800 dark:bg-slate-800">
+                                <img src={photoPreview} alt="첨부 사진 미리보기" className="h-full w-full object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={handleRemovePhoto}
+                                    className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 transition-colors hover:bg-black/70"
+                                >
+                                    <span className="material-symbols-outlined text-[14px] text-white">close</span>
+                                </button>
+                            </div>
+                        ) : null}
+                    </div>
+                    <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
+                        사람 얼굴, 차량 번호판 등 민감 정보가 포함된 사진은 업로드 전에 꼭 가려 주세요.
+                    </p>
+                </section>
+
+                <section className="mt-8">
+                    <div className="mb-4 flex items-center justify-between">
+                        <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">발생 위치</h2>
+                        <button type="button" onClick={handleOpenLocationSheet} className="flex items-center gap-1 text-xs font-bold text-primary hover:underline">
+                            위치 수정 <span className="material-symbols-outlined text-sm">chevron_right</span>
+                        </button>
+                    </div>
+                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                        <div className="flex items-center gap-4 p-4">
+                            <span className="material-symbols-outlined text-primary">location_on</span>
+                            <div className="flex-1">
+                                <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{locationName}</p>
+                                <p className="mt-0.5 font-mono text-[10px] uppercase text-slate-500">
+                                    {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section className="mt-8">
-                <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-slate-100">상세 설명</h2>
-                <div className="relative">
-                    <textarea
-                        className="w-full rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-900 outline-none transition-shadow placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-                        placeholder="상황을 자세히 설명해 주세요. 예: 가로등이 깜빡여서 어둡습니다."
-                        rows="4"
-                        value={description}
-                        onChange={(event) => setDescription(event.target.value)}
-                        maxLength={200}
-                    />
-                    <div className="absolute bottom-3 right-4 text-[10px] font-medium text-slate-400">{description.length}/200</div>
-                </div>
-            </section>
+                <section className="mt-8">
+                    <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-slate-100">상세 설명</h2>
+                    <div className="relative">
+                        <textarea
+                            className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 outline-none transition-shadow placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/40 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+                            placeholder="예: 가로등이 꺼져 있고 주변 시야가 매우 어둡습니다."
+                            rows="4"
+                            value={description}
+                            onChange={(event) => setDescription(event.target.value)}
+                            maxLength={200}
+                        />
+                        <div className="absolute bottom-3 right-4 text-[10px] font-medium text-slate-400">{description.length}/200</div>
+                    </div>
+                </section>
 
-            <div className="mt-6 flex items-start gap-3 rounded-xl bg-slate-100 p-4 dark:bg-slate-800/50">
-                <span className="material-symbols-outlined text-lg text-slate-400">info</span>
-                <p className="text-[11px] leading-relaxed text-slate-500">
-                    허위 신고는 관련 법령에 따라 처벌받을 수 있습니다. 신고 내용은 안전한 지역사회를 위해 지자체와 관련 기관에 전달됩니다.
-                </p>
+                <div className="mt-6 flex items-start gap-3 rounded-2xl bg-slate-100 p-4 dark:bg-slate-800/50">
+                    <span className="material-symbols-outlined text-lg text-slate-400">info</span>
+                    <p className="text-[11px] leading-relaxed text-slate-500">
+                        허위 신고는 관련 법령에 따라 책임을 질 수 있습니다. 신고 내용은 지역 안전 대응을 위해 공유될 수 있습니다.
+                    </p>
+                </div>
+
+                <div className="mt-8">
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className={`w-full rounded-xl py-4 text-base font-bold text-white shadow-lg transition-all ${
+                            isSubmitting ? 'cursor-not-allowed bg-primary/70' : 'bg-primary shadow-primary/20 active:scale-[0.98]'
+                        }`}
+                    >
+                        {isSubmitting ? '접수 중...' : '신고하기'}
+                    </button>
+                </div>
             </div>
 
-            <div className="mt-8">
-                <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className={`w-full rounded-xl py-4 text-base font-bold text-white shadow-lg transition-all ${isSubmitting ? 'cursor-not-allowed bg-primary/70' : 'bg-primary shadow-primary/20 active:scale-[0.98]'}`}
-                >
-                    {isSubmitting ? '접수 중...' : '신고하기'}
-                </button>
-            </div>
-        </div>
+            <BottomSheet
+                open={isLocationSheetOpen}
+                onClose={() => setIsLocationSheetOpen(false)}
+                title="신고 위치 수정"
+                description="지도에서 직접 눌러 신고 지점을 조정할 수 있습니다."
+                footer={
+                    <div className="flex gap-3">
+                        <button
+                            type="button"
+                            onClick={handleUseCurrentLocation}
+                            className="flex-1 rounded-xl border border-slate-200 py-3 text-sm font-bold text-slate-700 dark:border-slate-700 dark:text-slate-200"
+                        >
+                            현재 위치로
+                        </button>
+                        <button type="button" onClick={applyDraftLocation} className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white">
+                            선택 완료
+                        </button>
+                    </div>
+                }
+            >
+                <div className="space-y-4">
+                    <div className="h-64 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+                        <MapView center={pickerCenter} level={3} onClick={handleMapSelect}>
+                            <CustomOverlayMap position={draftLocation} zIndex={30}>
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-primary shadow-lg">
+                                    <span className="material-symbols-outlined text-base text-white">place</span>
+                                </div>
+                            </CustomOverlayMap>
+                        </MapView>
+                    </div>
+
+                    <div className="rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-800/60">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Selected</p>
+                        <p className="mt-1 font-mono text-xs text-slate-600 dark:text-slate-300">
+                            {draftLocation.lat.toFixed(5)}, {draftLocation.lng.toFixed(5)}
+                        </p>
+                    </div>
+                </div>
+            </BottomSheet>
+        </>
     )
 }
 

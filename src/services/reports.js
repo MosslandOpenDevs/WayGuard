@@ -1,4 +1,12 @@
 const DEFAULT_REPORT_POSITION = { lat: 37.5006, lng: 127.0364 }
+const REPORT_LABEL = '\uC8FC\uBBFC \uC2E0\uACE0'
+const REPORT_CATEGORY_LABELS = {
+    light: '\uAC00\uB85C\uB4F1 \uACE0\uC7A5',
+    cctv: 'CCTV \uC0AC\uAC01\uC9C0\uB300',
+    facility: '\uC704\uD5D8 \uC2DC\uC124\uBB3C',
+    suspicious: '\uC218\uC0C1\uD55C \uC0C1\uD669',
+    other: '\uAE30\uD0C0 \uC704\uD5D8',
+}
 
 function normalizeReportImageUrl(supabase, imageUrl) {
     if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.startsWith('http')) {
@@ -37,13 +45,16 @@ export async function fetchReportMarkers(supabase) {
 
         return {
             id: `report_${report.id}`,
-            type: '주민 신고',
+            type: REPORT_LABEL,
+            category: report.category,
+            categoryLabel: REPORT_CATEGORY_LABELS[report.category] || REPORT_LABEL,
             position: { lat, lng },
             icon: 'campaign',
             bgColor: 'bg-primary',
             color: '#2764e7',
             info: report.description || '',
             imageUrl: normalizeReportImageUrl(supabase, report.image_url),
+            createdAt: report.created_at || null,
         }
     })
 }

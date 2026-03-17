@@ -8,6 +8,13 @@ Safety Guardian is a mobile-first neighborhood safety app built around three cor
 
 The product no longer assumes government open-data integration as a required runtime dependency. The current app focuses on user-generated safety context, location-aware reporting, and guardian-sharing workflows.
 
+## Project Docs
+
+- [Product plan](./기획서_안전지킴이.md)
+- [Site vision](./SITE.md)
+- [Design system](./DESIGN.md)
+- [Work log](./작업기록.md)
+
 ## Product Focus
 
 ### 1. Home Map
@@ -16,7 +23,6 @@ The home map is a live neighborhood surface that combines:
 
 - resident reports stored in Supabase
 - community signal markers
-- safe route and safe hub mock layers for UI iteration
 
 ### 2. Resident Reports
 
@@ -69,17 +75,17 @@ npm run dev
 
 Default local address:
 
-- `http://localhost:4173/`
+- `http://localhost:5173/`
 
 ## Safe Return Database Setup
 
 To enable remote persistence for Safe Return, run:
 
-- [safe_return_supabase.sql](D:/0_Work/Vibe%20Coding/WayGuard/safe_return_supabase.sql)
+- [safe_return_supabase.sql](./safe_return_supabase.sql)
 
 Reference notes:
 
-- [SAFE_RETURN_SETUP.md](D:/0_Work/Vibe%20Coding/WayGuard/SAFE_RETURN_SETUP.md)
+- [SAFE_RETURN_SETUP.md](./SAFE_RETURN_SETUP.md)
 
 ## Current Direction
 
@@ -89,3 +95,18 @@ Large UI changes should follow this order:
 2. confirm layout and hierarchy
 3. port the approved direction into React
 4. do small spacing and interaction polish in code
+
+## UI Guardrail
+
+The current UI/UX direction is approved and should be preserved.
+
+- Do not change the overall visual tone, layout structure, or interaction pattern unless explicitly requested.
+- Limit future UI edits to small bug fixes, connection fixes, copy fixes, spacing polish, and minor usability improvements.
+
+## Working Agreement
+
+For future tasks, changes should be verified first and then reported clearly.
+
+- Check changes directly when possible before saying they are done.
+- Report what was confirmed separately from what could not be directly verified in this environment.
+- Prefer concrete verification notes such as build status, test status, and interaction checks.

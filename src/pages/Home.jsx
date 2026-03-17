@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Circle, CustomOverlayMap } from 'react-kakao-maps-sdk'
+import BottomSheet from '../components/feedback/BottomSheet'
 import { useToast } from '../components/feedback/ToastProvider'
 import CurrentLocationButton from '../components/map/CurrentLocationButton'
 import MapView from '../components/map/MapView'
@@ -9,30 +10,30 @@ import { generateMockSafetyData, MOCK_CATEGORIES } from '../utils/mockData'
 import { supabase } from '../utils/supabaseClient'
 
 const DEFAULT_CENTER = { lat: 37.5006, lng: 127.0364 }
+const ALL_FILTER = '__all__'
 
 const UI = {
-    all: '\uC804\uCCB4',
     residentReports: '\uC8FC\uBBFC \uC2E0\uACE0',
     community: '\uCEE4\uBBA4\uB2C8\uD2F0 \uC81C\uBCF4',
-    route: '\uC548\uC2EC \uACBD\uB85C',
-    hub: '\uC548\uC804 \uAC70\uC810',
     gpsUnavailable: 'GPS\uB97C \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.',
     reportsLoadFailed: '\uC2E0\uACE0 \uB370\uC774\uD130\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.',
     scoreTitle: '\uD604\uC7AC \uC704\uCE58 \uC548\uC2EC \uC9C0\uC218',
     scoreBadge: '\uCC38\uACE0 \uC9C0\uD45C',
     scoreBasis: '\uC8FC\uBBFC \uD65C\uB3D9 \uAE30\uBC18',
     communityLabel: '\uCEE4\uBBA4\uB2C8\uD2F0',
-    routeLabel: '\uC548\uC2EC \uACBD\uB85C',
     reportsLabel: '\uC8FC\uBBFC \uC2E0\uACE0',
-    detailsReady: '\uC0C1\uC138 \uC815\uBCF4\uB294 \uB2E4\uC74C Stitch \uC2DC\uC548 \uBC18\uC601 \uB2E8\uACC4\uC5D0\uC11C \uC5F0\uACB0\uD569\uB2C8\uB2E4.',
+    totalLabel: '\uC804\uCCB4 \uC81C\uBCF4',
     fallbackLocation: '\uD604\uC7AC \uC704\uCE58\uB97C \uAC00\uC838\uC624\uC9C0 \uBABB\uD574 \uAE30\uBCF8 \uC704\uCE58 \uAE30\uC900\uC73C\uB85C \uD45C\uC2DC \uC911\uC785\uB2C8\uB2E4.',
 }
 
-const FILTERS = [UI.all, UI.residentReports, UI.community, UI.route, UI.hub]
+const FILTERS = [UI.residentReports, UI.community]
 
 function Home() {
-    const [activeFilter, setActiveFilter] = useState(UI.all)
+    const [activeFilter, setActiveFilter] = useState(ALL_FILTER)
     const [selectedMarkerId, setSelectedMarkerId] = useState(null)
+    const [isScoreSheetOpen, setIsScoreSheetOpen] = useState(false)
+    const [activeDetailItem, setActiveDetailItem] = useState(null)
+    const suppressNextMapClickRef = useRef(false)
     const [state, setState] = useState({
         center: DEFAULT_CENTER,
         level: 3,
@@ -98,20 +99,44 @@ function Home() {
         setMockSafetyData(generateMockSafetyData(newCenter, 16, 0.005))
     }
 
+    const handleMarkerClick = (id) => {
+        suppressNextMapClickRef.current = true
+        setSelectedMarkerId((prev) => (prev === id ? null : id))
+    }
+
+    const handleMapClick = () => {
+        if (suppressNextMapClickRef.current) {
+            suppressNextMapClickRef.current = false
+            return
+        }
+
+        setSelectedMarkerId(null)
+    }
+
+    const communitySignals = useMemo(
+        () => mockSafetyData.filter((item) => item.type === MOCK_CATEGORIES.community),
+        [mockSafetyData],
+    )
+
+    const allData = useMemo(() => [...realReports, ...communitySignals], [communitySignals, realReports])
+
     const filteredData = useMemo(() => {
-        const allData = [...realReports, ...mockSafetyData]
-        if (activeFilter === UI.all) {
+        if (activeFilter === ALL_FILTER) {
             return allData
         }
         return allData.filter((item) => item.type === activeFilter)
-    }, [activeFilter, mockSafetyData, realReports])
+    }, [activeFilter, allData])
 
     const stats = useMemo(() => {
-        const community = mockSafetyData.filter((item) => item.type === MOCK_CATEGORIES.community).length
-        const routes = mockSafetyData.filter((item) => item.type === MOCK_CATEGORIES.route).length
+        const community = communitySignals.length
         const reports = realReports.length
-        return { community, routes, reports }
-    }, [mockSafetyData, realReports])
+        const total = community + reports
+        return { community, reports, total }
+    }, [communitySignals, realReports])
+
+    const handleOpenMarkerDetails = (item) => {
+        setActiveDetailItem(item)
+    }
 
     return (
         <div className="flex h-full min-h-0 flex-col overflow-hidden">
@@ -121,8 +146,12 @@ function Home() {
                         <button
                             key={filter}
                             type="button"
-                            onClick={() => setActiveFilter(filter)}
-                            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${activeFilter === filter ? 'bg-primary text-white shadow-md' : 'border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'}`}
+                            onClick={() => setActiveFilter((prev) => (prev === filter ? ALL_FILTER : filter))}
+                            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                                activeFilter === ALL_FILTER || activeFilter === filter
+                                    ? 'bg-primary text-white shadow-md'
+                                    : 'border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                            }`}
                         >
                             {filter}
                         </button>
@@ -131,8 +160,8 @@ function Home() {
             </div>
 
             <div className="relative min-h-0 flex-1 overflow-hidden bg-slate-200">
-                <MapView center={state.center} level={state.level} onClick={() => setSelectedMarkerId(null)}>
-                    <CustomOverlayMap position={state.center} zIndex={100}>
+                <MapView center={state.center} level={state.level} onClick={handleMapClick}>
+                    <CustomOverlayMap position={state.center} clickable={false} zIndex={1}>
                         <div className="pointer-events-none flex size-8 items-center justify-center rounded-full bg-primary/20 animate-pulse">
                             <div className="size-4 rounded-full bg-primary shadow-lg ring-2 ring-white"></div>
                         </div>
@@ -152,7 +181,8 @@ function Home() {
                     <SafetyMarkers
                         data={filteredData}
                         selectedMarkerId={selectedMarkerId}
-                        onMarkerClick={(id) => setSelectedMarkerId(id === selectedMarkerId ? null : id)}
+                        onMarkerClick={handleMarkerClick}
+                        onOpenDetails={handleOpenMarkerDetails}
                     />
                 </MapView>
 
@@ -195,12 +225,12 @@ function Home() {
                                     <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{stats.community}</p>
                                 </div>
                                 <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-2 text-center dark:border-slate-700 dark:bg-slate-900/50">
-                                    <p className="mb-1 text-[10px] font-medium text-slate-500">{UI.routeLabel}</p>
-                                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{stats.routes}</p>
-                                </div>
-                                <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-2 text-center dark:border-slate-700 dark:bg-slate-900/50">
                                     <p className="mb-1 text-[10px] font-medium text-slate-500">{UI.reportsLabel}</p>
                                     <p className="text-sm font-bold text-red-600 dark:text-red-400">{stats.reports}</p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-slate-50 p-2 text-center dark:border-slate-700 dark:bg-slate-900/50">
+                                    <p className="mb-1 text-[10px] font-medium text-slate-500">{UI.totalLabel}</p>
+                                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{stats.total}</p>
                                 </div>
                             </div>
                         </div>
@@ -215,7 +245,7 @@ function Home() {
                             </div>
                             <button
                                 type="button"
-                                onClick={() => showToast({ title: UI.detailsReady })}
+                                onClick={() => setIsScoreSheetOpen(true)}
                                 className="flex items-center px-2 py-1 text-[10px] font-semibold text-primary hover:bg-primary/5"
                             >
                                 {'\uC790\uC138\uD788 \uBCF4\uAE30'} <span className="material-symbols-outlined text-[14px]">chevron_right</span>
@@ -229,6 +259,88 @@ function Home() {
                     )}
                 </div>
             </div>
+
+            <BottomSheet
+                open={isScoreSheetOpen}
+                onClose={() => setIsScoreSheetOpen(false)}
+                title="안심 지수 상세"
+                description="현재 위치 반경 500m 기준의 주민 활동과 신고 흐름을 요약했습니다."
+            >
+                <div className="space-y-4">
+                    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Current Score</p>
+                        <div className="mt-2 flex items-end gap-2">
+                            <span className="text-4xl font-black text-primary">85%</span>
+                            <span className="pb-1 text-sm font-semibold text-slate-500">보통 이상</span>
+                        </div>
+                        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                            커뮤니티 제보가 꾸준히 올라오고 최근 신고 수가 과도하게 몰리지 않아 현재 구간은 비교적 안정적으로 보입니다.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                        <div className="rounded-2xl border border-slate-100 bg-white p-4 text-center dark:border-slate-800 dark:bg-slate-800">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">Community</p>
+                            <p className="mt-2 text-2xl font-black text-emerald-500">{stats.community}</p>
+                        </div>
+                        <div className="rounded-2xl border border-slate-100 bg-white p-4 text-center dark:border-slate-800 dark:bg-slate-800">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">Reports</p>
+                            <p className="mt-2 text-2xl font-black text-red-500">{stats.reports}</p>
+                        </div>
+                        <div className="rounded-2xl border border-slate-100 bg-white p-4 text-center dark:border-slate-800 dark:bg-slate-800">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">Total</p>
+                            <p className="mt-2 text-2xl font-black text-blue-500">{stats.total}</p>
+                        </div>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="rounded-2xl border border-slate-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-800">
+                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">해석 가이드</h4>
+                            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                                주민 신고 수는 경고 신호이고, 커뮤니티 제보는 생활권 감시 밀도를 의미합니다. 둘을 함께 보되 최근 신고 증가가 더 큰 영향을 줍니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </BottomSheet>
+
+            <BottomSheet
+                open={Boolean(activeDetailItem)}
+                onClose={() => setActiveDetailItem(null)}
+                title={activeDetailItem?.categoryLabel || activeDetailItem?.type}
+                description={activeDetailItem?.type}
+                footer={
+                    activeDetailItem?.imageUrl ? (
+                        <button
+                            type="button"
+                            onClick={() => window.open(activeDetailItem.imageUrl, '_blank', 'noopener,noreferrer')}
+                            className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white"
+                        >
+                            사진 크게 보기
+                        </button>
+                    ) : null
+                }
+            >
+                {activeDetailItem ? (
+                    <div className="space-y-4">
+                        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Details</p>
+                            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                                {activeDetailItem.info || '추가 설명이 아직 없습니다.'}
+                            </p>
+                        </div>
+                        <div className="rounded-2xl border border-slate-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-800">
+                            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Coordinates</p>
+                            <p className="mt-2 font-mono text-xs text-slate-600 dark:text-slate-300">
+                                {activeDetailItem.position?.lat?.toFixed?.(5)}, {activeDetailItem.position?.lng?.toFixed?.(5)}
+                            </p>
+                        </div>
+                        {activeDetailItem.imageUrl ? (
+                            <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-slate-100 dark:border-slate-700">
+                                <img src={activeDetailItem.imageUrl} alt={`${activeDetailItem.type} preview`} className="h-52 w-full object-cover" />
+                            </div>
+                        ) : null}
+                    </div>
+                ) : null}
+            </BottomSheet>
         </div>
     )
 }

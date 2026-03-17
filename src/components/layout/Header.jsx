@@ -9,12 +9,18 @@ function Header({ title, isHome, session }) {
                     <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{title}</h1>
                 </div>
                 {session ? (
-                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+                    <NavLink
+                        to="/settings"
+                        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
+                    >
                         <span className="material-symbols-outlined text-slate-500">person</span>
-                    </div>
+                    </NavLink>
                 ) : (
-                    <NavLink to="/login" className="text-sm font-bold text-primary">
-                        {'\uB85C\uADF8\uC778'}
+                    <NavLink
+                        to="/login"
+                        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 transition-colors hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
+                    >
+                        <span className="material-symbols-outlined text-slate-500">person</span>
                     </NavLink>
                 )}
             </div>

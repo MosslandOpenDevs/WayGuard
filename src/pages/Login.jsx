@@ -1,19 +1,33 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import BottomSheet from '../components/feedback/BottomSheet'
 import { useToast } from '../components/feedback/ToastProvider'
-import { supabase } from '../utils/supabaseClient'
+import { isSupabaseConfigured, supabase, supabaseAuthSetupMessage } from '../utils/supabaseClient'
 
 function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
+    const [resetEmail, setResetEmail] = useState('')
+    const [isResetOpen, setIsResetOpen] = useState(false)
+    const [isResetSending, setIsResetSending] = useState(false)
     const navigate = useNavigate()
     const { showToast } = useToast()
 
     const handleLogin = async (event) => {
         event.preventDefault()
         setErrorMsg('')
+
+        if (!isSupabaseConfigured) {
+            setErrorMsg(supabaseAuthSetupMessage)
+            showToast({
+                tone: 'error',
+                title: '로그인 설정이 필요합니다.',
+                description: supabaseAuthSetupMessage,
+            })
+            return
+        }
 
         if (!email || !password) {
             setErrorMsg('이메일과 비밀번호를 입력해 주세요.')
@@ -43,77 +57,164 @@ function Login() {
         navigate('/')
     }
 
+    const openResetSheet = () => {
+        setResetEmail(email)
+        setIsResetOpen(true)
+    }
+
+    const handleSendReset = async () => {
+        if (!isSupabaseConfigured) {
+            showToast({
+                tone: 'error',
+                title: '비밀번호 재설정은 Supabase 연결이 필요합니다.',
+                description: supabaseAuthSetupMessage,
+            })
+            return
+        }
+
+        if (!resetEmail.trim()) {
+            showToast({
+                tone: 'error',
+                title: '재설정 메일을 받을 이메일을 입력해 주세요.',
+            })
+            return
+        }
+
+        setIsResetSending(true)
+        const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), {
+            redirectTo: `${window.location.origin}/login`,
+        })
+        setIsResetSending(false)
+
+        if (error) {
+            showToast({
+                tone: 'error',
+                title: '재설정 메일 전송에 실패했습니다.',
+                description: error.message,
+            })
+            return
+        }
+
+        setIsResetOpen(false)
+        showToast({
+            tone: 'success',
+            title: '비밀번호 재설정 메일을 보냈습니다.',
+            description: `${resetEmail.trim()} 주소의 받은편지함을 확인해 주세요.`,
+        })
+    }
+
     return (
-        <div className="flex h-full flex-col justify-center overflow-y-auto px-6 py-10">
-            <div className="mb-10 text-center">
-                <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                    <span className="material-symbols-outlined text-4xl">shield_person</span>
-                </div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">안전 지킴이</h1>
-                <p className="mt-2 text-sm text-slate-500">안전한 우리 동네를 위한 연결 서비스</p>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-                {errorMsg && (
-                    <div className="rounded-xl bg-red-50 p-3 text-center text-sm font-medium text-red-600 dark:bg-red-900/30 dark:text-red-400">
-                        {errorMsg}
+        <>
+            <div className="flex h-full flex-col justify-center overflow-y-auto px-6 py-10">
+                <div className="mb-10 text-center">
+                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                        <span className="material-symbols-outlined text-4xl">shield_person</span>
                     </div>
-                )}
-
-                <div>
-                    <label className="ml-1 mb-1 block text-xs font-bold text-slate-700 dark:text-slate-300" htmlFor="email">
-                        이메일
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none transition-shadow focus:border-primary focus:ring-2 focus:ring-primary/50 dark:border-slate-800 dark:bg-slate-900"
-                        placeholder="example@email.com"
-                    />
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">안전 지킴이</h1>
+                    <p className="mt-2 text-sm text-slate-500">동네 안전 정보를 함께 지키는 WayGuard에 로그인해 주세요.</p>
                 </div>
 
-                <div>
-                    <label className="ml-1 mb-1 block text-xs font-bold text-slate-700 dark:text-slate-300" htmlFor="password">
-                        비밀번호
-                    </label>
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none transition-shadow focus:border-primary focus:ring-2 focus:ring-primary/50 dark:border-slate-800 dark:bg-slate-900"
-                        placeholder="비밀번호를 입력해 주세요"
-                    />
-                </div>
+                <form onSubmit={handleLogin} className="space-y-4">
+                    {!isSupabaseConfigured ? (
+                        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-center text-sm text-amber-700 dark:border-amber-900/60 dark:bg-amber-900/20 dark:text-amber-300">
+                            {supabaseAuthSetupMessage}
+                        </div>
+                    ) : null}
 
-                <div className="flex justify-end pt-1">
+                    {errorMsg ? (
+                        <div className="rounded-xl bg-red-50 p-3 text-center text-sm font-medium text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                            {errorMsg}
+                        </div>
+                    ) : null}
+
+                    <div>
+                        <label className="mb-1 ml-1 block text-xs font-bold text-slate-700 dark:text-slate-300" htmlFor="email">
+                            이메일
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(event) => setEmail(event.target.value)}
+                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none transition-shadow focus:border-primary focus:ring-2 focus:ring-primary/50 dark:border-slate-800 dark:bg-slate-900"
+                            placeholder="example@email.com"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="mb-1 ml-1 block text-xs font-bold text-slate-700 dark:text-slate-300" htmlFor="password">
+                            비밀번호
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none transition-shadow focus:border-primary focus:ring-2 focus:ring-primary/50 dark:border-slate-800 dark:bg-slate-900"
+                            placeholder="비밀번호를 입력해 주세요."
+                        />
+                    </div>
+
+                    <div className="flex justify-end pt-1">
+                        <button
+                            type="button"
+                            onClick={openResetSheet}
+                            className="text-xs font-bold text-slate-500 transition-colors hover:text-primary"
+                        >
+                            비밀번호를 잊으셨나요?
+                        </button>
+                    </div>
+
                     <button
-                        onClick={() => showToast({ title: '비밀번호 찾기 기능은 준비 중입니다.' })}
-                        type="button"
-                        className="text-xs font-bold text-slate-500 transition-colors hover:text-primary"
+                        type="submit"
+                        disabled={loading || !isSupabaseConfigured}
+                        className={`mt-4 w-full rounded-xl py-4 font-bold text-white transition-all ${
+                            loading || !isSupabaseConfigured ? 'cursor-not-allowed bg-primary/70' : 'bg-primary shadow-lg shadow-primary/30 active:scale-[0.98]'
+                        }`}
                     >
-                        비밀번호를 잊으셨나요?
+                        {loading ? '로그인 중...' : '로그인'}
                     </button>
+                </form>
+
+                <div className="mt-8 text-center text-sm">
+                    <span className="text-slate-500">계정이 없으신가요? </span>
+                    <Link to="/signup" className="font-bold text-primary hover:underline">
+                        회원가입
+                    </Link>
                 </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`mt-4 w-full rounded-xl py-4 font-bold text-white transition-all ${loading ? 'cursor-not-allowed bg-primary/70' : 'bg-primary shadow-lg shadow-primary/30 active:scale-[0.98]'}`}
-                >
-                    {loading ? '로그인 중...' : '로그인'}
-                </button>
-            </form>
-
-            <div className="mt-8 text-center text-sm">
-                <span className="text-slate-500">계정이 없으신가요? </span>
-                <Link to="/signup" className="font-bold text-primary hover:underline">
-                    회원가입
-                </Link>
             </div>
-        </div>
+
+            <BottomSheet
+                open={isResetOpen}
+                onClose={() => setIsResetOpen(false)}
+                title="비밀번호 재설정"
+                description="가입한 이메일로 재설정 링크를 보냅니다."
+                footer={
+                    <button
+                        type="button"
+                        onClick={handleSendReset}
+                        disabled={isResetSending}
+                        className={`w-full rounded-xl py-3 text-sm font-bold text-white ${
+                            isResetSending ? 'cursor-not-allowed bg-primary/70' : 'bg-primary'
+                        }`}
+                    >
+                        {isResetSending ? '전송 중...' : '재설정 메일 보내기'}
+                    </button>
+                }
+            >
+                <label className="mb-2 block text-xs font-bold text-slate-700 dark:text-slate-300" htmlFor="reset-email">
+                    이메일 주소
+                </label>
+                <input
+                    id="reset-email"
+                    type="email"
+                    value={resetEmail}
+                    onChange={(event) => setResetEmail(event.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/40 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    placeholder="example@email.com"
+                />
+            </BottomSheet>
+        </>
     )
 }
 

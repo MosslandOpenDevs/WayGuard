@@ -4,6 +4,16 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // PWA 설정 포함 Vite 구성
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+  },
   plugins: [
     react(),
     VitePWA({
