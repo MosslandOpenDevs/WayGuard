@@ -54,7 +54,7 @@ function Login() {
             return
         }
 
-        navigate('/')
+        navigate('/app')
     }
 
     const openResetSheet = () => {

@@ -133,7 +133,7 @@ function Report() {
                 title: '신고가 접수되었습니다.',
                 description: '주변 이웃과 관련 기관에 공유됩니다.',
             })
-            navigate('/')
+            navigate('/app')
         } catch (error) {
             console.error('Error inserting report:', error)
             showToast({

@@ -19,7 +19,9 @@ Safety Guardian is a mobile-first neighborhood safety web app built around a pra
 - Settings and auth surfaces should feel complete and support real usage, not placeholder flows.
 
 ## 4. Sitemap
-- [x] Home Map: `/`
+- [x] Marketing Landing: `/`
+  Public introduction homepage that links visitors into the live web app and explains web-first access.
+- [x] Home Map: `/app`
   Stitch reference: `Main Safety Map Screen`
   Primary screen: `projects/12067784276096933084/screens/c62d7666d4b64f01951c00627723c472`
 - [x] Safe Return: `/safe-return`
@@ -58,6 +60,7 @@ Safety Guardian is a mobile-first neighborhood safety web app built around a pra
 - Kakao map marker interaction still needs manual browser/device validation because the automation browser blocked the Kakao SDK request.
 
 ## 7. Roadmap
+- [x] Create and approve a public-facing Stitch landing page for sharing the service outside the product.
 - [ ] Finish manual QA for real Kakao map marker interaction and popup placement.
 - [ ] Persist community likes and comments to backend storage.
 - [ ] Add report status lifecycle and moderation flow.

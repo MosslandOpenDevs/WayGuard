@@ -10,6 +10,8 @@ This folder holds reusable prompts for the current Safety Guardian Stitch projec
 
 ## Prompt Files
 - `home-map-reframe.md`: Home map refresh centered on community activity.
+- `landing-home-launch.md`: Public introduction homepage that funnels visitors into the live web app.
+- `landing-home-refine.md`: Short follow-up prompt for correcting the landing page tone and Korean copy.
 - `report-screen-refresh.md`: Faster and clearer report submission flow.
 - `safe-return-refresh.md`: Stronger guardian-focused safe-return dashboard.
 - `community-feed-refresh.md`: Cleaner local feed and post composer.

@@ -8,6 +8,7 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import ChildSafety from './pages/ChildSafety'
 import Community from './pages/Community'
 import Home from './pages/Home'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Report from './pages/Report'
 import SafeReturn from './pages/SafeReturn'
@@ -20,7 +21,8 @@ function App() {
     const [session, setSession] = useState(null)
     const [loading, setLoading] = useState(true)
 
-    const isHome = location.pathname === '/'
+    const isLandingPage = location.pathname === '/'
+    const isHome = location.pathname === '/app'
     const isCommunity = location.pathname === '/community'
     const isAuthPage = location.pathname === '/login' || location.pathname === '/signup'
     const title = PAGE_TITLES[location.pathname] || '\uC548\uC804 \uC9C0\uD0B4\uC774'
@@ -48,54 +50,61 @@ function App() {
         )
     }
 
+    const routeElements = (
+        <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/app" element={<Home />} />
+            <Route path="/child-safety" element={<ChildSafety />} />
+            <Route
+                path="/report"
+                element={
+                    <ProtectedRoute session={session}>
+                        <Report />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/safe-return"
+                element={
+                    <ProtectedRoute session={session}>
+                        <SafeReturn />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/community"
+                element={
+                    <ProtectedRoute session={session}>
+                        <Community />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/settings"
+                element={
+                    <ProtectedRoute session={session}>
+                        <Settings />
+                    </ProtectedRoute>
+                }
+            />
+        </Routes>
+    )
+
     return (
         <ToastProvider>
-            <div className="relative mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900">
-                {!isCommunity && !isAuthPage && <Header title={title} isHome={isHome} session={session} />}
+            {isLandingPage ? (
+                routeElements
+            ) : (
+                <div className="relative mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden bg-white shadow-2xl dark:bg-slate-900">
+                    {!isCommunity && !isAuthPage && <Header title={title} isHome={isHome} session={session} />}
 
-                <main className="relative min-h-0 flex-1 overflow-hidden">
-                    <Routes>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
-                        <Route path="/" element={<Home />} />
-                        <Route path="/child-safety" element={<ChildSafety />} />
-                        <Route
-                            path="/report"
-                            element={
-                                <ProtectedRoute session={session}>
-                                    <Report />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/safe-return"
-                            element={
-                                <ProtectedRoute session={session}>
-                                    <SafeReturn />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/community"
-                            element={
-                                <ProtectedRoute session={session}>
-                                    <Community />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/settings"
-                            element={
-                                <ProtectedRoute session={session}>
-                                    <Settings />
-                                </ProtectedRoute>
-                            }
-                        />
-                    </Routes>
-                </main>
+                    <main className="relative min-h-0 flex-1 overflow-hidden">{routeElements}</main>
 
-                {!isAuthPage && <BottomNav />}
-            </div>
+                    {!isAuthPage && <BottomNav />}
+                </div>
+            )}
         </ToastProvider>
     )
 }
