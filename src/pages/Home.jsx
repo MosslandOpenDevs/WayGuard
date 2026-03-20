@@ -139,26 +139,7 @@ function Home() {
     }
 
     return (
-        <div className="flex h-full min-h-0 flex-col overflow-hidden">
-            <div className="relative z-10 overflow-x-auto border-b border-slate-100 bg-white px-4 py-3 hide-scrollbar dark:border-slate-800 dark:bg-slate-900">
-                <div className="flex gap-2 whitespace-nowrap">
-                    {FILTERS.map((filter) => (
-                        <button
-                            key={filter}
-                            type="button"
-                            onClick={() => setActiveFilter((prev) => (prev === filter ? ALL_FILTER : filter))}
-                            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                                activeFilter === ALL_FILTER || activeFilter === filter
-                                    ? 'bg-primary text-white shadow-md'
-                                    : 'border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                            }`}
-                        >
-                            {filter}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
+        <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
             <div className="relative min-h-0 flex-1 overflow-hidden bg-slate-200">
                 <MapView center={state.center} level={state.level} onClick={handleMapClick}>
                     <CustomOverlayMap position={state.center} clickable={false} zIndex={1}>
@@ -186,7 +167,28 @@ function Home() {
                     />
                 </MapView>
 
-                <div className="absolute right-4 top-4 z-10 flex flex-col gap-2">
+                <div className="pointer-events-none absolute left-4 top-4 right-20 z-10">
+                    <div className="hide-scrollbar pointer-events-auto overflow-x-auto">
+                        <div className="inline-flex w-max max-w-full gap-2 rounded-2xl border border-white/50 bg-white/70 p-2 shadow-lg backdrop-blur-md dark:border-slate-700/70 dark:bg-slate-900/65">
+                            {FILTERS.map((filter) => (
+                                <button
+                                    key={filter}
+                                    type="button"
+                                    onClick={() => setActiveFilter((prev) => (prev === filter ? ALL_FILTER : filter))}
+                                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                                        activeFilter === ALL_FILTER || activeFilter === filter
+                                            ? 'bg-primary text-white shadow-md'
+                                            : 'border border-slate-200/80 bg-white/85 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                                >
+                                    {filter}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="absolute right-4 top-5 z-10 flex flex-col gap-2">
                     <button
                         type="button"
                         onClick={() => setState((prev) => ({ ...prev, level: Math.max(1, (prev.level || 3) - 1) }))}

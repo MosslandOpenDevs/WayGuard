@@ -15,6 +15,8 @@ The product no longer assumes government open-data integration as a required run
 - [Design system](./DESIGN.md)
 - [Work log](./작업기록.md)
 
+- [Web deploy guide](./WEB_DEPLOY.md)
+
 ## Product Focus
 
 ### 1. Home Map
