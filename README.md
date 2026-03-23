@@ -5,8 +5,19 @@ Safety Guardian is a mobile-first neighborhood safety app built around three cor
 - resident reports
 - community safety signals
 - safe return sharing
+- child safety route guidance
 
-The product no longer assumes government open-data integration as a required runtime dependency. The current app focuses on user-generated safety context, location-aware reporting, and guardian-sharing workflows.
+The product no longer assumes government open-data integration as a required runtime dependency. The current app focuses on user-generated safety context, location-aware reporting, guardian-sharing workflows, and a public landing page for web sharing.
+
+## Live Web
+
+- Production: `https://wayguard-web-rose.vercel.app`
+
+## Latest Update - 2026-03-23
+
+- launched the current public web deployment on Vercel
+- refined the landing page hero with a cleaner mobile mockup
+- polished Korean typography, spacing rhythm, and card hierarchy on the landing page
 
 ## Project Docs
 
@@ -51,6 +62,10 @@ Safe Return supports:
 - local fallback persistence
 - Supabase persistence when the dedicated tables exist
 
+### 5. Child Safety
+
+The app also includes a child safety flow at `/child-safety` for checking safer routes and nearby safety spots.
+
 ## Tech Stack
 
 - React + Vite
@@ -89,6 +104,16 @@ Reference notes:
 
 - [SAFE_RETURN_SETUP.md](./SAFE_RETURN_SETUP.md)
 
+## Community Interaction Database Setup
+
+If you want community likes and comments to work on an existing Supabase project, also run:
+
+- [community_interactions_supabase.sql](./community_interactions_supabase.sql)
+
+If you are setting up the project from scratch and want the full baseline schema in one pass, use:
+
+- [supabase_schema.sql](./supabase_schema.sql)
+
 ## Current Direction
 
 Large UI changes should follow this order:
@@ -112,3 +137,10 @@ For future tasks, changes should be verified first and then reported clearly.
 - Check changes directly when possible before saying they are done.
 - Report what was confirmed separately from what could not be directly verified in this environment.
 - Prefer concrete verification notes such as build status, test status, and interaction checks.
+
+## Deployment Note
+
+The current public web deployment was created as a new Vercel project and is intended to be the clean path for future landing page updates.
+
+- preferred production URL: `https://wayguard-web-rose.vercel.app`
+- for future web releases, push the approved landing changes and verify the Vercel production deployment after each release
