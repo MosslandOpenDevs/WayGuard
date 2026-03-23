@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="308" height="520" viewBox="0 0 308 520" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="154" y1="96" x2="154" y2="440" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7FAFF"/>
+      <stop offset="1" stop-color="#EDF3FB"/>
+    </linearGradient>
+    <filter id="shadow" x="18" y="14" width="272" height="492" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="10"/>
+      <feGaussianBlur stdDeviation="10"/>
+      <feColorMatrix values="0 0 0 0 0.0588235 0 0 0 0 0.0901961 0 0 0 0 0.164706 0 0 0 0.08 0"/>
+      <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+      <feBlend in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+    </filter>
+    <filter id="soft" x="0" y="0" width="308" height="520" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="0.5" result="effect1_foregroundBlur_0_1"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="38" y="24" width="232" height="472" rx="28" fill="white"/>
+    <rect x="38.5" y="24.5" width="231" height="471" rx="27.5" stroke="#E2E8F0"/>
+  </g>
+
+  <path d="M146 35C146 31.6863 148.686 29 152 29H201C204.314 29 207 31.6863 207 35V37C207 40.3137 204.314 43 201 43H152C148.686 43 146 40.3137 146 37V35Z" fill="#0F172A"/>
+
+  <g transform="translate(54 48)">
+    <path d="M14 1.5L22.5 4.7V12.2C22.5 18.8 16.7 23.4 14 24.9C11.3 23.4 5.5 18.8 5.5 12.2V4.7L14 1.5Z" fill="white" stroke="#2563EB" stroke-width="2"/>
+    <path d="M10.4 11.8L13.1 14.3L17.8 9.4" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="34" y="16" fill="#0F172A" font-size="14" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">안전지킴이</text>
+    <circle cx="206" cy="12" r="12" fill="#F8FAFC" stroke="#CBD5E1"/>
+    <circle cx="206" cy="8.5" r="3.2" stroke="#94A3B8" stroke-width="1.8"/>
+    <path d="M200 18.6C201.2 15.8 203.6 14.4 206 14.4C208.4 14.4 210.8 15.8 212 18.6" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+
+  <rect x="54" y="76" width="200" height="36" rx="16" fill="#F1F5F9"/>
+  <circle cx="71" cy="94" r="3.8" stroke="#94A3B8" stroke-width="2"/>
+  <path d="M74 97L77 100" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <text x="88" y="98" fill="#94A3B8" font-size="12" font-weight="500" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">동네를 검색해보세요</text>
+
+  <g filter="url(#soft)">
+    <rect x="54" y="125" width="200" height="314" rx="24" fill="url(#bg)"/>
+    <rect x="54" y="125" width="200" height="314" rx="24" stroke="#D8E4F1"/>
+  </g>
+
+  <rect x="68" y="140" width="64" height="30" rx="15" fill="#2563EB"/>
+  <rect x="136" y="140" width="84" height="30" rx="15" fill="#2563EB"/>
+  <text x="85" y="159" fill="white" font-size="12" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">주민 신고</text>
+  <text x="154" y="159" fill="white" font-size="12" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">커뮤니티 제보</text>
+
+  <rect x="227" y="157" width="27" height="27" rx="13.5" fill="white"/>
+  <rect x="227" y="194" width="27" height="27" rx="13.5" fill="white"/>
+  <path d="M240.5 165.5V175.5" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <path d="M235.5 170.5H245.5" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <path d="M235.5 207.5H245.5" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+
+  <path d="M54 220L116 174L145 174L188 136L254 136V242H54V220Z" fill="#E8EEF7"/>
+  <path d="M54 274L95 274L133 237L165 237L198 206L254 206V320H54V274Z" fill="#E1E8F2"/>
+  <path d="M54 322H254V356H54V322Z" fill="#F7E48D"/>
+  <path d="M54 245H254" stroke="white" stroke-opacity="0.75" stroke-width="10"/>
+  <path d="M107 182V273" stroke="#C4CEDB" stroke-width="28" stroke-linecap="round"/>
+  <path d="M184 175H221C233.15 175 243 184.85 243 197V219C243 231.15 233.15 241 221 241H184V175Z" fill="#DCE8C1"/>
+  <text x="179" y="242" fill="#4B6B3C" font-size="12" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">안심 지점</text>
+  <text x="77" y="201" fill="#64748B" font-size="12" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">203</text>
+  <text x="158" y="220" fill="#64748B" font-size="12" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">221</text>
+
+  <circle cx="96" cy="255" r="14" fill="white" stroke="#F87171" stroke-width="5"/>
+  <circle cx="91" cy="223" r="12" fill="#FB7185" fill-opacity="0.18"/>
+  <circle cx="91" cy="223" r="8" fill="#EF4444"/>
+  <text x="88" y="227" fill="white" font-size="10" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">1</text>
+  <circle cx="123" cy="252" r="6" fill="#3B82F6"/>
+  <circle cx="202" cy="246" r="6" fill="#D97706"/>
+  <circle cx="166" cy="236" r="6" fill="#D97706"/>
+
+  <g filter="url(#shadow)">
+    <rect x="82" y="260" width="132" height="86" rx="18" fill="white" fill-opacity="0.92"/>
+  </g>
+  <rect x="136" y="259" width="70" height="18" rx="9" fill="#EF4444"/>
+  <text x="149" y="272" fill="white" font-size="11" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">주의 구간</text>
+  <text x="106" y="286" fill="#0F172A" font-size="28" font-weight="800" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">80</text>
+  <text x="131" y="305" fill="#64748B" font-size="11" font-weight="600" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">제보 2건</text>
+  <text x="131" y="321" fill="#64748B" font-size="11" font-weight="500" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">보행 시 확인 필요</text>
+  <path d="M96 289L109 302" stroke="#CBD5E1"/>
+  <path d="M101 307H196" stroke="#E2E8F0"/>
+  <text x="73" y="352" fill="#0F172A" font-size="18" font-weight="800" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">85%</text>
+  <text x="73" y="368" fill="#64748B" font-size="11" font-weight="500" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">현재 위치 안심 지수</text>
+
+  <rect x="54" y="389" width="200" height="42" rx="18" fill="white" stroke="#E2E8F0"/>
+  <circle cx="80" cy="410" r="11" stroke="#94A3B8" stroke-width="1.8"/>
+  <path d="M80 403V410L84 412" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="98" y="416" fill="#0F172A" font-size="16" font-weight="800" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">58km</text>
+  <text x="146" y="416" fill="#CBD5E1" font-size="16" font-weight="700" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">|</text>
+  <text x="157" y="416" fill="#0F172A" font-size="16" font-weight="800" font-family="Pretendard, Apple SD Gothic Neo, sans-serif">1시간 55분</text>
+  <circle cx="236" cy="410" r="11" stroke="#CBD5E1"/>
+  <circle cx="231" cy="410" r="1.5" fill="#94A3B8"/>
+  <circle cx="236" cy="410" r="1.5" fill="#94A3B8"/>
+  <circle cx="241" cy="410" r="1.5" fill="#94A3B8"/>
+
+  <rect x="54" y="447" width="200" height="36" rx="18" fill="white"/>
+  <path d="M86 466V454" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+  <path d="M79 462L86 458L93 462V474L86 478L79 474V462Z" stroke="#2563EB" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M123 463L130 460V468L123 471V463Z" fill="#94A3B8"/>
+  <path d="M132 461L139 458V467L132 470V461Z" fill="#94A3B8"/>
+  <path d="M169 459H179V470H169V459Z" stroke="#94A3B8" stroke-width="2"/>
+  <path d="M169 472H179" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="216" cy="459" r="5" stroke="#94A3B8" stroke-width="2"/>
+  <path d="M208 472C209.4 468.8 212.2 467.2 215 467.2C217.8 467.2 220.6 468.8 222 472" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="154" cy="460" r="17" fill="#2563EB"/>
+  <circle cx="154" cy="460" r="21" fill="#2563EB" fill-opacity="0.2"/>
+  <path d="M148 452L154 450L160 452V458C160 462.8 156.4 466.4 154 467.8C151.6 466.4 148 462.8 148 458V452Z" fill="white"/>
+  <path d="M154 455.5C152.6 455.5 151.5 456.6 151.5 458C151.5 459.4 152.6 460.5 154 460.5C155.4 460.5 156.5 459.4 156.5 458C156.5 456.6 155.4 455.5 154 455.5Z" fill="#2563EB"/>
+</svg>

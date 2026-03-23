@@ -1,18 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
 import BottomSheet from '../components/feedback/BottomSheet'
 import { useToast } from '../components/feedback/ToastProvider'
-import { createCommunityPost, fetchCommunityFeed } from '../services/community'
+import {
+    createCommunityComment,
+    createCommunityPost,
+    fetchCommunityFeed,
+    toggleCommunityPostLike,
+} from '../services/community'
 import { supabase } from '../utils/supabaseClient'
 
-const FILTERS = ['전체', '조명 점검', '순찰 요청', '위험 요소', '안심 메모']
+const FILTERS = ['전체', '조명 점검', '순찰 요청', '위험 요소', '동네 메모']
 const NEIGHBORHOODS = [
     { id: 'yeoksam', name: '역삼동', subtitle: '강남구 생활권' },
-    { id: 'nonhyeon', name: '논현동', subtitle: '심야 이동 집중 구역' },
+    { id: 'nonhyeon', name: '논현동', subtitle: '야간 이동 집중 구역' },
     { id: 'daechi', name: '대치동', subtitle: '학원가 보호 동선' },
 ]
 
 function normalizeCategory(post) {
-    return FILTERS.includes(post.title) ? post.title : '안심 메모'
+    return FILTERS.includes(post.title) ? post.title : '동네 메모'
+}
+
+function formatTime(isoString) {
+    const date = new Date(isoString)
+    return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
 function Community() {
@@ -20,26 +30,27 @@ function Community() {
     const [feed, setFeed] = useState([])
     const [isWriting, setIsWriting] = useState(false)
     const [newPostContent, setNewPostContent] = useState('')
-    const [selectedCategory, setSelectedCategory] = useState('안심 메모')
+    const [selectedCategory, setSelectedCategory] = useState('동네 메모')
     const [activeNeighborhood, setActiveNeighborhood] = useState(NEIGHBORHOODS[0])
     const [isNeighborhoodSheetOpen, setIsNeighborhoodSheetOpen] = useState(false)
-    const [activePost, setActivePost] = useState(null)
+    const [activePostId, setActivePostId] = useState(null)
     const [sheetMode, setSheetMode] = useState(null)
     const [commentDraft, setCommentDraft] = useState('')
-    const [commentMap, setCommentMap] = useState({})
-    const [likedPostIds, setLikedPostIds] = useState({})
     const [isLoading, setIsLoading] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
+    const [busyLikePostId, setBusyLikePostId] = useState(null)
     const { showToast } = useToast()
-
-    useEffect(() => {
-        fetchFeedData()
-    }, [])
 
     const fetchFeedData = async () => {
         setIsLoading(true)
+
         try {
-            const data = await fetchCommunityFeed(supabase)
+            const {
+                data: { session },
+            } = await supabase.auth.getSession()
+
+            const data = await fetchCommunityFeed(supabase, session?.user?.id || null)
             setFeed(data || [])
         } catch (error) {
             console.error('Error fetching feeds:', error)
@@ -52,6 +63,39 @@ function Community() {
         }
     }
 
+    useEffect(() => {
+        void fetchFeedData()
+
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange(() => {
+            void fetchFeedData()
+        })
+
+        return () => subscription.unsubscribe()
+    }, [])
+
+    const filteredFeed = useMemo(() => {
+        if (activeFilter === '전체') {
+            return feed
+        }
+
+        return feed.filter((post) => normalizeCategory(post) === activeFilter)
+    }, [activeFilter, feed])
+
+    const activePost = useMemo(() => feed.find((post) => post.id === activePostId) || null, [feed, activePostId])
+
+    const closePostSheet = () => {
+        setActivePostId(null)
+        setSheetMode(null)
+        setCommentDraft('')
+    }
+
+    const openPostSheet = (postId, mode) => {
+        setActivePostId(postId)
+        setSheetMode(mode)
+    }
+
     const handleAddPost = async () => {
         if (!newPostContent.trim()) {
             showToast({
@@ -62,6 +106,7 @@ function Community() {
         }
 
         setIsSubmitting(true)
+
         const {
             data: { session },
         } = await supabase.auth.getSession()
@@ -86,12 +131,12 @@ function Community() {
 
             setIsWriting(false)
             setNewPostContent('')
-            setSelectedCategory('안심 메모')
+            setSelectedCategory('동네 메모')
             showToast({
                 tone: 'success',
                 title: '동네 소식을 등록했습니다.',
             })
-            fetchFeedData()
+            await fetchFeedData()
         } catch (error) {
             console.error('Error posting feed:', error)
             showToast({
@@ -104,40 +149,69 @@ function Community() {
         }
     }
 
-    const formatTime = (isoString) => {
-        const date = new Date(isoString)
-        return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
-    }
-
-    const filteredFeed = useMemo(() => {
-        if (activeFilter === '전체') {
-            return feed
+    const handleToggleLike = async (postId) => {
+        const targetPost = feed.find((post) => post.id === postId)
+        if (!targetPost) {
+            return
         }
 
-        return feed.filter((post) => normalizeCategory(post) === activeFilter)
-    }, [activeFilter, feed])
+        const {
+            data: { session },
+        } = await supabase.auth.getSession()
 
-    const openPostSheet = (post, mode) => {
-        setActivePost(post)
-        setSheetMode(mode)
+        if (!session) {
+            showToast({
+                tone: 'error',
+                title: '로그인이 필요한 기능입니다.',
+            })
+            return
+        }
+
+        const nextLiked = !targetPost.isLiked
+
+        setBusyLikePostId(postId)
+        setFeed((current) =>
+            current.map((post) =>
+                post.id === postId
+                    ? {
+                          ...post,
+                          isLiked: nextLiked,
+                          likeCount: Math.max(0, (post.likeCount || 0) + (nextLiked ? 1 : -1)),
+                      }
+                    : post,
+            ),
+        )
+
+        try {
+            await toggleCommunityPostLike(supabase, postId, session.user.id, nextLiked)
+            showToast({
+                tone: 'success',
+                title: nextLiked ? '공감을 남겼습니다.' : '공감을 취소했습니다.',
+            })
+        } catch (error) {
+            console.error('Error toggling like:', error)
+            setFeed((current) =>
+                current.map((post) =>
+                    post.id === postId
+                        ? {
+                              ...post,
+                              isLiked: targetPost.isLiked,
+                              likeCount: targetPost.likeCount || 0,
+                          }
+                        : post,
+                ),
+            )
+            showToast({
+                tone: 'error',
+                title: '공감 처리 중 오류가 발생했습니다.',
+                description: error.message,
+            })
+        } finally {
+            setBusyLikePostId(null)
+        }
     }
 
-    const closePostSheet = () => {
-        setActivePost(null)
-        setSheetMode(null)
-        setCommentDraft('')
-    }
-
-    const handleToggleLike = (postId) => {
-        const nextLiked = !likedPostIds[postId]
-        setLikedPostIds((current) => ({ ...current, [postId]: nextLiked }))
-        showToast({
-            tone: 'success',
-            title: nextLiked ? '공감을 남겼습니다.' : '공감을 취소했습니다.',
-        })
-    }
-
-    const handleAddComment = () => {
+    const handleAddComment = async () => {
         if (!activePost || !commentDraft.trim()) {
             showToast({
                 tone: 'error',
@@ -146,22 +220,49 @@ function Community() {
             return
         }
 
-        const nextComment = {
-            id: Date.now(),
-            author: '나',
-            content: commentDraft.trim(),
-            createdAt: new Date().toISOString(),
+        const {
+            data: { session },
+        } = await supabase.auth.getSession()
+
+        if (!session) {
+            showToast({
+                tone: 'error',
+                title: '로그인이 필요한 기능입니다.',
+            })
+            return
         }
 
-        setCommentMap((current) => ({
-            ...current,
-            [activePost.id]: [...(current[activePost.id] || []), nextComment],
-        }))
-        setCommentDraft('')
-        showToast({
-            tone: 'success',
-            title: '댓글을 남겼습니다.',
-        })
+        setIsCommentSubmitting(true)
+
+        try {
+            const nextComment = await createCommunityComment(supabase, activePost.id, session.user.id, commentDraft.trim())
+
+            setFeed((current) =>
+                current.map((post) =>
+                    post.id === activePost.id
+                        ? {
+                              ...post,
+                              comments: [...(post.comments || []), nextComment],
+                              commentCount: (post.commentCount || 0) + 1,
+                          }
+                        : post,
+                ),
+            )
+            setCommentDraft('')
+            showToast({
+                tone: 'success',
+                title: '댓글을 남겼습니다.',
+            })
+        } catch (error) {
+            console.error('Error adding comment:', error)
+            showToast({
+                tone: 'error',
+                title: '댓글 작성 중 오류가 발생했습니다.',
+                description: error.message,
+            })
+        } finally {
+            setIsCommentSubmitting(false)
+        }
     }
 
     const handleCopyPost = async () => {
@@ -194,7 +295,7 @@ function Community() {
                 })
                 showToast({
                     tone: 'success',
-                    title: '공유가 완료되었습니다.',
+                    title: '공유를 마쳤습니다.',
                 })
             } else {
                 await navigator.clipboard.writeText(activePost.content)
@@ -212,7 +313,7 @@ function Community() {
         }
     }
 
-    const activeComments = activePost ? commentMap[activePost.id] || [] : []
+    const activeComments = activePost?.comments || []
 
     return (
         <>
@@ -262,8 +363,8 @@ function Community() {
                     ) : (
                         filteredFeed.map((post) => {
                             const category = normalizeCategory(post)
-                            const likeCount = (post.danger_count || 0) + (likedPostIds[post.id] ? 1 : 0)
-                            const commentCount = (commentMap[post.id] || []).length
+                            const likeCount = post.likeCount || 0
+                            const commentCount = post.commentCount || 0
 
                             return (
                                 <article
@@ -294,7 +395,7 @@ function Community() {
                                                 </div>
                                                 <button
                                                     type="button"
-                                                    onClick={() => openPostSheet(post, 'options')}
+                                                    onClick={() => openPostSheet(post.id, 'options')}
                                                     className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                                                 >
                                                     <span className="material-symbols-outlined text-lg">more_horiz</span>
@@ -313,21 +414,24 @@ function Community() {
                                                 <span className="material-symbols-outlined text-xs">location_on</span>
                                                 <span className="text-[11px] font-medium">{post.location_name}</span>
                                             </div>
-                                        ) : <div />}
+                                        ) : (
+                                            <div />
+                                        )}
                                         <div className="flex items-center gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => handleToggleLike(post.id)}
+                                                disabled={busyLikePostId === post.id}
                                                 className={`flex items-center gap-1 transition-colors ${
-                                                    likedPostIds[post.id] ? 'text-primary' : 'text-slate-400 hover:text-primary'
-                                                }`}
+                                                    post.isLiked ? 'text-primary' : 'text-slate-400 hover:text-primary'
+                                                } ${busyLikePostId === post.id ? 'opacity-60' : ''}`}
                                             >
                                                 <span className="material-symbols-outlined text-sm">favorite</span>
                                                 <span className="text-xs font-semibold">{likeCount}</span>
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => openPostSheet(post, 'comments')}
+                                                onClick={() => openPostSheet(post.id, 'comments')}
                                                 className="flex items-center gap-1 text-slate-400 transition-colors hover:text-primary"
                                             >
                                                 <span className="material-symbols-outlined text-sm">chat_bubble</span>
@@ -355,7 +459,7 @@ function Community() {
                 open={isNeighborhoodSheetOpen}
                 onClose={() => setIsNeighborhoodSheetOpen(false)}
                 title="동네 선택"
-                description="커뮤니티 피드 기준 생활권을 바꿀 수 있습니다."
+                description="커뮤니티 피드 기준 생활권을 바꿔 볼 수 있습니다."
             >
                 <div className="space-y-3">
                     {NEIGHBORHOODS.map((neighborhood) => (
@@ -409,7 +513,7 @@ function Community() {
                     >
                         <div>
                             <p className="text-sm font-bold text-slate-900 dark:text-white">공유하기</p>
-                            <p className="mt-1 text-xs text-slate-500">이웃과 이 내용을 바로 공유합니다.</p>
+                            <p className="mt-1 text-xs text-slate-500">이웃과 게시글 내용을 바로 공유합니다.</p>
                         </div>
                         <span className="material-symbols-outlined text-slate-400">ios_share</span>
                     </button>
@@ -428,9 +532,16 @@ function Community() {
                             value={commentDraft}
                             onChange={(event) => setCommentDraft(event.target.value)}
                             className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/40 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                            placeholder="이웃에게 남길 댓글을 입력해 주세요."
+                            placeholder="이웃에게 짧은 댓글을 남겨 주세요."
                         />
-                        <button type="button" onClick={handleAddComment} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white">
+                        <button
+                            type="button"
+                            onClick={handleAddComment}
+                            disabled={isCommentSubmitting}
+                            className={`rounded-xl px-4 py-3 text-sm font-bold text-white ${
+                                isCommentSubmitting ? 'bg-primary/70' : 'bg-primary'
+                            }`}
+                        >
                             등록
                         </button>
                     </div>
@@ -497,7 +608,7 @@ function Community() {
                         <div className="relative">
                             <textarea
                                 className="mb-6 h-36 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/50 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
-                                placeholder="주변 이웃에게 지금 필요한 안전 정보나 주의점을 공유해 보세요."
+                                placeholder="주민 이웃에게 지금 필요한 안전 정보나 주의 사항을 공유해 보세요."
                                 value={newPostContent}
                                 onChange={(event) => setNewPostContent(event.target.value)}
                                 maxLength={500}
