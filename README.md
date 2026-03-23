@@ -39,14 +39,7 @@ The home map is a live neighborhood surface that combines:
 
 ### 2. Resident Reports
 
-Users can submit:
-
-- broken lighting
-- CCTV blind spots
-- hazardous facilities
-- suspicious situations
-
-Reports support text, location, and optional image upload through Supabase Storage.
+Users can submit local risk reports with text, location, and optional image upload through Supabase Storage.
 
 ### 3. Community Feed
 
