@@ -4,7 +4,7 @@
 
 Run this file in Supabase SQL Editor:
 
-- [safe_return_supabase.sql](D:/0_Work/Vibe%20Coding/WayGuard/safe_return_supabase.sql)
+- [safe_return_supabase.sql](./safe_return_supabase.sql)
 
 Required base table:
 

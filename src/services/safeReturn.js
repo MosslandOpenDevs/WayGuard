@@ -208,14 +208,22 @@ export async function syncSafeReturnSessionLocation(supabase, session) {
         return
     }
 
-    await supabase
-        .from('safe_return_sessions')
-        .update({
-            last_latitude: session.lastLatitude,
-            last_longitude: session.lastLongitude,
-            updated_at: new Date().toISOString(),
-        })
-        .eq('id', session.id)
+    try {
+        const { error } = await supabase
+            .from('safe_return_sessions')
+            .update({
+                last_latitude: session.lastLatitude,
+                last_longitude: session.lastLongitude,
+                updated_at: new Date().toISOString(),
+            })
+            .eq('id', session.id)
+
+        if (error) {
+            console.error('Safe return location sync failed:', error)
+        }
+    } catch (error) {
+        console.error('Safe return location sync failed:', error)
+    }
 }
 
 export async function finishSafeReturnSession(supabase, session, status = 'arrived') {

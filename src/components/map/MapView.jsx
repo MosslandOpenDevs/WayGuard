@@ -16,6 +16,10 @@ const MapView = ({ center, level = 3, isPanto = true, children, fallback = null,
         libraries: ['services', 'clusterer'],
     });
 
+    // A caller can pass a `fallback` element (e.g. Home's interactive preview map)
+    // to render when the Kakao SDK is unavailable; `reason` is injected into it.
+    // Callers without a fallback (e.g. the report location picker) get a plain
+    // banner so an unusable map is never disguised as an interactive one.
     const fallbackFor = (reason) => {
         if (React.isValidElement(fallback)) {
             return React.cloneElement(fallback, { reason })

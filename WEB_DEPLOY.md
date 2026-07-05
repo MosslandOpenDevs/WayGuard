@@ -49,7 +49,7 @@ After the first deployment, copy the production URL and update these services.
 
 - open your Kakao app settings
 - add the deployed URL to the JavaScript key allowed domains
-- example: `https://wayguard.vercel.app`
+- example: `https://wayguard-web-rose.vercel.app`
 
 If this step is skipped, the map may fail to load outside localhost.
 
@@ -73,5 +73,5 @@ Use one of these options:
 ## Notes
 
 - The app is deployable as a website now.
-- PWA install polish is not fully finished yet because the manifest still expects install icons that are not in `public/`.
-- For web sharing, that does not block deployment.
+- PWA install icons (`public/icon-192.png`, `public/icon-512.png`, and a maskable `public/icon-512-maskable.png`) are now included, so the install prompt and home-screen icon render correctly.
+- For web sharing, static hosting plus the environment variables above is all that is required.

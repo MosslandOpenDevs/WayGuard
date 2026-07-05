@@ -46,3 +46,38 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Entry animation used by toasts, bottom sheets, and result panels. */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.32s ease-out;
+}
+
+/* Sweeping scan line on the child-safety route analysis preview. */
+@keyframes scan {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(230%);
+  }
+}
+
+/* Marching-ants route path on the child-safety result map. */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}

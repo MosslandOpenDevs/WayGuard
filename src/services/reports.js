@@ -8,6 +8,15 @@ const REPORT_CATEGORY_LABELS = {
     other: '\uAE30\uD0C0 \uC704\uD5D8',
 }
 
+function toCoordinate(value, fallback) {
+    if (value === null || value === undefined || value === '') {
+        return fallback
+    }
+
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : fallback
+}
+
 function normalizeReportImageUrl(supabase, imageUrl) {
     if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.startsWith('http')) {
         return imageUrl
@@ -27,8 +36,8 @@ export async function fetchReportMarkers(supabase) {
     const locationMap = new Map()
 
     return (data || []).map((report) => {
-        let lat = Number(report.latitude) || DEFAULT_REPORT_POSITION.lat
-        let lng = Number(report.longitude) || DEFAULT_REPORT_POSITION.lng
+        let lat = toCoordinate(report.latitude, DEFAULT_REPORT_POSITION.lat)
+        let lng = toCoordinate(report.longitude, DEFAULT_REPORT_POSITION.lng)
 
         const locKey = `${lat.toFixed(4)}_${lng.toFixed(4)}`
         if (locationMap.has(locKey)) {

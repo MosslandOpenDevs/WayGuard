@@ -202,7 +202,7 @@ function SafeReturn() {
     const addContact = () => {
         setProfile((current) => ({
             ...current,
-            contacts: [...current.contacts, { ...EMPTY_CONTACT, id: Date.now() }],
+            contacts: [...current.contacts, { id: Date.now(), name: '', phone: '' }],
         }))
     }
 

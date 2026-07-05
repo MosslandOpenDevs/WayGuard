@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#2764e7" />
-  <meta name="description" content="????? - ?? ?? ?? ??? ??? ?? ?? ???? ?? ?? ??" />
+  <meta name="description" content="안전 지킴이 - 우리 동네 안전 정보를 확인하고 위험을 함께 지키는 생활 안전 웹앱" />
   <link rel="icon" type="image/svg+xml" href="/shield.svg" />
   <!-- Stitch에서 사용하는 폰트 및 아이콘 -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,7 +36,15 @@
       },
     }
   </script>
-  <title>????? | ?? ?? ?? ??</title>
+  <title>안전 지킴이 | 우리 동네 안전 정보</title>
+  <script>
+    // Restore the saved dark-mode preference before first paint to avoid a flash.
+    try {
+      if (localStorage.getItem('wayguard.settings.dark-mode') === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) { /* localStorage unavailable */ }
+  </script>
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">

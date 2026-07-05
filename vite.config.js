@@ -23,8 +23,9 @@ export default defineConfig({
         name: '안전 지킴이 - Safety Guardian',
         short_name: '안전지킴이',
         description: '우리 동네 안전 정보 플랫폼 - 유아·여성 안전 특화',
-        theme_color: '#2563EB',
-        background_color: '#F8FAFC',
+        lang: 'ko',
+        theme_color: '#2764e7',
+        background_color: '#f6f6f8',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
@@ -32,12 +33,20 @@ export default defineConfig({
           {
             src: '/icon-192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
             src: '/icon-512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icon-512-maskable.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       }

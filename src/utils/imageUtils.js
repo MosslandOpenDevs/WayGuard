@@ -29,7 +29,11 @@ export const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0
 
                 canvas.toBlob(
                     (blob) => {
-                        resolve(blob);
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error('이미지를 처리하지 못했습니다.'));
+                        }
                     },
                     'image/jpeg',
                     quality

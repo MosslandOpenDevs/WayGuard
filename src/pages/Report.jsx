@@ -48,6 +48,7 @@ function Report() {
                     })
                 },
                 () => reject(new Error('위치 권한이 없어 기본 위치를 사용합니다.')),
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
             )
         })
 

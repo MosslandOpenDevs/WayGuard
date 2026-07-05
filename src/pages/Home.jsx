@@ -3,6 +3,7 @@ import { Circle, CustomOverlayMap } from 'react-kakao-maps-sdk'
 import BottomSheet from '../components/feedback/BottomSheet'
 import { useToast } from '../components/feedback/ToastProvider'
 import CurrentLocationButton from '../components/map/CurrentLocationButton'
+import MapFallbackPreview from '../components/map/MapFallbackPreview'
 import MapView from '../components/map/MapView'
 import SafetyMarkers from '../components/map/SafetyMarkers'
 import { fetchReportMarkers } from '../services/reports'
@@ -11,6 +12,7 @@ import { supabase } from '../utils/supabaseClient'
 
 const DEFAULT_CENTER = { lat: 37.5006, lng: 127.0364 }
 const ALL_FILTER = '__all__'
+const SAFETY_RING_LENGTH = 2 * Math.PI * 34
 
 const UI = {
     residentReports: '\uC8FC\uBBFC \uC2E0\uACE0',
@@ -68,6 +70,7 @@ function Home() {
                     }))
                     setMockSafetyData(generateMockSafetyData(DEFAULT_CENTER, 16, 0.005))
                 },
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
             )
         } else {
             setState((prev) => ({
@@ -134,6 +137,21 @@ function Home() {
         return { community, reports, total }
     }, [communitySignals, realReports])
 
+    const safety = useMemo(() => {
+        // Community signals raise confidence; recent reports lower it, with diminishing weight.
+        const raw = 60 + stats.community * 2 - stats.reports * 4
+        const score = Math.max(35, Math.min(98, Math.round(raw)))
+        const rating = Math.round((score / 20) * 10) / 10
+        const label = score >= 80 ? '안정적' : score >= 60 ? '보통 이상' : '주의 필요'
+        const note =
+            score >= 80
+                ? '커뮤니티 제보가 꾸준히 올라오고 최근 신고 수가 과도하게 몰리지 않아 현재 구간은 비교적 안정적으로 보입니다.'
+                : score >= 60
+                    ? '주민 활동과 신고 흐름이 일반적인 수준입니다. 이동할 때 주변 상황을 함께 확인해 주세요.'
+                    : '최근 신고가 상대적으로 많은 편입니다. 이동할 때 주변 상황에 조금 더 주의해 주세요.'
+        return { score, rating, label, note }
+    }, [stats])
+
     const handleOpenMarkerDetails = (item) => {
         setActiveDetailItem(item)
     }
@@ -141,7 +159,21 @@ function Home() {
     return (
         <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
             <div className="relative min-h-0 flex-1 overflow-hidden bg-slate-200">
-                <MapView center={state.center} level={state.level} onClick={handleMapClick}>
+                <MapView
+                    center={state.center}
+                    level={state.level}
+                    onClick={handleMapClick}
+                    fallback={
+                        <MapFallbackPreview
+                            center={state.center}
+                            level={state.level}
+                            markers={filteredData}
+                            selectedMarkerId={selectedMarkerId}
+                            onMarkerClick={handleMarkerClick}
+                            onBackgroundClick={handleMapClick}
+                        />
+                    }
+                >
                     <CustomOverlayMap position={state.center} clickable={false} zIndex={1}>
                         <div className="pointer-events-none flex size-8 items-center justify-center rounded-full bg-primary/20 animate-pulse">
                             <div className="size-4 rounded-full bg-primary shadow-lg ring-2 ring-white"></div>
@@ -218,7 +250,7 @@ function Home() {
                                 <span className="material-symbols-outlined text-lg text-amber-500" style={{ fontVariationSettings: "'FILL' 1" }}>
                                     star
                                 </span>
-                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">4.2</span>
+                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{safety.rating}</span>
                                 <span className="ml-1 text-xs text-slate-500">{UI.scoreBasis}</span>
                             </div>
                             <div className="grid grid-cols-3 gap-3">
@@ -241,9 +273,19 @@ function Home() {
                             <div className="relative flex h-20 w-20 items-center justify-center">
                                 <svg className="h-full w-full -rotate-90">
                                     <circle className="text-slate-100 dark:text-slate-700" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" strokeWidth="6"></circle>
-                                    <circle className="text-primary transition-all duration-1000 ease-out" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" strokeDasharray="213" strokeDashoffset="32" strokeWidth="6"></circle>
+                                    <circle
+                                        className="text-primary transition-all duration-1000 ease-out"
+                                        cx="40"
+                                        cy="40"
+                                        fill="transparent"
+                                        r="34"
+                                        stroke="currentColor"
+                                        strokeDasharray={SAFETY_RING_LENGTH}
+                                        strokeDashoffset={SAFETY_RING_LENGTH * (1 - safety.score / 100)}
+                                        strokeWidth="6"
+                                    ></circle>
                                 </svg>
-                                <span className="absolute text-xl font-bold text-primary">85%</span>
+                                <span className="absolute text-xl font-bold text-primary">{safety.score}%</span>
                             </div>
                             <button
                                 type="button"
@@ -272,11 +314,11 @@ function Home() {
                     <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Current Score</p>
                         <div className="mt-2 flex items-end gap-2">
-                            <span className="text-4xl font-black text-primary">85%</span>
-                            <span className="pb-1 text-sm font-semibold text-slate-500">보통 이상</span>
+                            <span className="text-4xl font-black text-primary">{safety.score}%</span>
+                            <span className="pb-1 text-sm font-semibold text-slate-500">{safety.label}</span>
                         </div>
                         <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                            커뮤니티 제보가 꾸준히 올라오고 최근 신고 수가 과도하게 몰리지 않아 현재 구간은 비교적 안정적으로 보입니다.
+                            {safety.note}
                         </p>
                     </div>
                     <div className="grid grid-cols-3 gap-3">
