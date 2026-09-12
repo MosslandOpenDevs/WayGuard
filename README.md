@@ -1,5 +1,9 @@
 # 안전 지킴이 (WayGuard)
 
+<!-- opendevs-badges:start -->
+[![Website: wayguard-web-rose.vercel.app](https://img.shields.io/badge/Website-wayguard--web--rose.vercel.app-2563eb?style=flat)](https://wayguard-web-rose.vercel.app)
+<!-- opendevs-badges:end -->
+
 **안전 지킴이 (Safety Guardian / WayGuard)** is a mobile-first, Korean-language
 neighborhood safety web app. It helps residents see what is happening nearby,
 report local risks, keep an eye out for each other, and share a calm "safe
